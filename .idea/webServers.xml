@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0ba9c8c2-cb7a-4d91-8115-e97c8ff11f6a" name="GS Gather WS Internal" url="http://34.75.171.27">
+        <fileTransfer host="34.75.171.27" port="22" privateKey="$USER_HOME$/.ssh/gc_rsa_gather" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
