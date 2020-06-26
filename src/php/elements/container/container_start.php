@@ -18,5 +18,10 @@
         require_once __DIR__ . "/../../../css/micromodal.css";
         ?>
     </style>
+    <script>
+        <?php
+        require_once __DIR__ . "/../../../js/HTTPClient.js";
+        ?>
+    </script>
 </head>
 <body>

@@ -26,17 +26,21 @@ class HTTPClient {
         headers: []
 
     };
-    service(service_name){
+    set_service(service_name){
         this.request_body.target.service = service_name;
+        return this;
     }
-    action(action_name){
+    set_action(action_name){
         this.request_body.target.action = action_name;
+        return this;
     }
-    data(data){
+    set_data(data){
         this.request_body.data = data;
+        return this;
     }
     header(header){
         this.request_body.headers.push(header)
+        return this;
     }
     is_valid() {
         return !(this.request_body.target == null || this.request_body.target.action == null)
@@ -46,17 +50,21 @@ class HTTPClient {
             throw new ValidationError("Request is invalid.")
         }
         return new Promise(((resolve, reject) => {
-            $.post((this.config.address.target_http + ":" + this.config.address.port), {
-                service: this.request_body.target.service,
-                action: this.request_body.target.action,
-                data: this.request_body.data
+            $.ajax({
+                method: "POST",
+                url: "#",
+                data: {
+                    service: this.request_body.target.service,
+                    action: this.request_body.target.action,
+                    data: this.request_body.data
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    reject(JSON.parse(xhr.responseText));
+                },
+                success: function (data) {
+                    resolve(data);
+                }
             })
-                .done(function (data) {
-                    resolve(data)
-                })
-                .fail(function (data) {
-                    reject(data)
-                });
         }))
 
     }
