@@ -1,0 +1,2 @@
+Code,Service,Action,Exception,Description
+1011110	,API.accounts	,Create,AccountAlreadyExists,AccountAlreadyExists

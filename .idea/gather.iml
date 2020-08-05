@@ -7,5 +7,9 @@
     <orderEntry type="library" name="index" level="application" />
     <orderEntry type="library" name="require" level="application" />
     <orderEntry type="library" name="instascan" level="application" />
+    <orderEntry type="library" name="jquery.slim" level="application" />
+    <orderEntry type="library" name="jquery.mask" level="application" />
+    <orderEntry type="library" name="password" level="application" />
+    <orderEntry type="library" name="pwstrength-bootstrap" level="application" />
   </component>
 </module>
