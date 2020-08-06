@@ -1,0 +1,3 @@
+<?php
+//define("COMMS_SENDGRID_KEYS_API_PRIVATE", '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');
+define("COMMS_SENDGRID_KEYS_API_PRIVATE", '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');
