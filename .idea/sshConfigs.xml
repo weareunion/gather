@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig host="34.75.171.27" id="059329f4-da39-41ae-89ad-37724d692097" keyPath="$USER_HOME$/.ssh/gc_rsa_gather" port="22" customName="GS Gather WS Internal" nameFormat="CUSTOM" username="gatherdevacc">
+        <option name="customName" value="GS Gather WS Internal" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>

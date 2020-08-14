@@ -11,5 +11,13 @@
     <orderEntry type="library" name="jquery.mask" level="application" />
     <orderEntry type="library" name="password" level="application" />
     <orderEntry type="library" name="pwstrength-bootstrap" level="application" />
+    <orderEntry type="library" name="Chart.bundle" level="application" />
+    <orderEntry type="library" name="odometer" level="application" />
+    <orderEntry type="library" name="nouislider" level="application" />
+    <orderEntry type="library" name="theme" level="application" />
+    <orderEntry type="library" name="simplebar" level="application" />
+    <orderEntry type="library" name="chart.js" level="application" />
+    <orderEntry type="library" name="jquery" level="application" />
+    <orderEntry type="library" name="all" level="application" />
   </component>
 </module>

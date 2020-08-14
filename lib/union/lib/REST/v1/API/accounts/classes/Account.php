@@ -2,6 +2,10 @@
 
 namespace Union\API\accounts;
 use Moycroft\API\internal\mysql\Connect;
+use Union\Exceptions\AccountAlreadyExists;
+use Union\Exceptions\DatabaseInsertionError;
+use Union\Exceptions\InvalidParams;
+
 \Union\PKG\Autoloader::import__require("API.managers.mysql");
 class Account
 {
@@ -72,7 +76,7 @@ class Account
             $account_id = \Union\API\managers\GUID::generate();
             $connection = new Connect();
             $connection->connect();
-            $query = "INSERT INTO `gather-accounts` (
+            $query = "INSERT INTO slately_users.`security_auth-general_account_profiles` (
                                           account_id, 
                                           first_name, 
                                           last_name, 
@@ -116,10 +120,10 @@ class Account
                 $connection->connect();
                 $result = true;
                 if ($phone_number != null) {
-                    $result = $connection->query("UPDATE `gather-accounts` SET phone_number='$phone_number' WHERE account_id = '$lookup_results'");
+                    $result = $connection->query("UPDATE slately_users.`security_auth-general_account_profiles` SET phone_number='$phone_number' WHERE account_id = '$lookup_results'");
                 }
                 if ($email_address != null) {
-                    $result = $connection->query("UPDATE `gather-accounts` SET email_address='$email_address' WHERE account_id = '$lookup_results'");
+                    $result = $connection->query("UPDATE slately_users.`security_auth-general_account_profiles` SET email_address='$email_address' WHERE account_id = '$lookup_results'");
                 }
                 $connection->query("UPDATE `gather-accounts` SET password_hashed='$password' WHERE account_id = '$lookup_results'");
             }catch (\Exception $exception){
@@ -136,7 +140,7 @@ class Account
         $phone_number = preg_replace('/[^0-9.]+/', '', $phone_number);
         $connect = new Connect();
         $connect->connect();
-        $results = $connect->query("SELECT account_id FROM `gather-accounts` WHERE phone_number = '$phone_number'", true);
+        $results = $connect->query("SELECT account_id FROM slately_users.`security_auth-general_account_profiles` WHERE phone_number = '$phone_number'", true);
         $connect->disconnect();
         if (sizeof($results) == 0){
             return false;
@@ -154,7 +158,7 @@ class Account
     static function account_exists($account_id){
         $connection = new Connect();
         $connection->connect();
-        return !(sizeof($connection->query("SELECT * FROM `gather-accounts` WHERE account_id='$account_id'", true)) == 0);
+        return !(sizeof($connection->query("SELECT * FROM slately_users.`security_auth-general_account_profiles` WHERE account_id='$account_id'", true)) == 0);
     }
     static function get_first_name($account_id){
         return self::get_account_param($account_id, 'first_name');
@@ -172,7 +176,7 @@ class Account
         if (!self::account_exists($account_id)) return false;
         $connection = new Connect();
         $connection->connect();
-        $res = $connection->query("SELECT `".$peram_name."` FROM `gather-accounts` where account_id ='$account_id'", true)[0];
+        $res = $connection->query("SELECT `$peram_name` FROM slately_users.`security_auth-general_account_profiles` where account_id ='$account_id'", true)[0];
         if (!isset($res[$peram_name])) return false;
         return $res[$peram_name];
     }
@@ -180,7 +184,7 @@ class Account
         $email = self::clean_string($email);
         $connect = new Connect();
         $connect->connect();
-        $results = $connect->query("SELECT account_id FROM `gather-accounts` WHERE email_address = '$email'", true);
+        $results = $connect->query("SELECT account_id FROM slately_users.`security_auth-general_account_profiles` WHERE email_address = '$email'", true);
         $connect->disconnect();
         if (sizeof($results) == 0){
             return false;
@@ -211,7 +215,7 @@ class Account
     static function is_unlinked($account_id){
         $connect = new Connect();
         $connect->connect();
-        $results = $connect->query("SELECT account_id FROM `gather-accounts` WHERE account_id = '$account_id' AND password_hashed = 'UNLINKED'", true);
+        $results = $connect->query("SELECT account_id FROM slately_users.`security_auth-general_account_profiles` WHERE account_id = '$account_id' AND password_hashed = 'UNLINKED'", true);
         $connect->disconnect();
         return (!(sizeof($results) == 0));
     }

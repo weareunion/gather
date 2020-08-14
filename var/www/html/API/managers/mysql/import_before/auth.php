@@ -16,7 +16,7 @@
 //define("DB_USER", "washmelc_root");
 //define("DB_PASS", "vnA=ooX]ncVO@*=xha");
 define("DB_HOST", "10.142.0.3");
-define("DB_NAME", "gather");
+define("DB_NAME", "slately_general");
 define("DB_USER", "ws_internal");
 define("DB_PASS", "orangex");
 

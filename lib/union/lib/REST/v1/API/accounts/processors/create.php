@@ -3,9 +3,13 @@ namespace Union\processor;
 
 use Union\API\accounts\Registration;
 use Union\API\Respondus\RespondusException;
+use Union\Exceptions\InvalidParams;
+use Union\PKG\Autoloader;
+
+Autoloader::import__require("API.accounts");
 function run($data){
     if (!isset($data['name']['first'], $data['name']['last'], $data['phone'], $data['email'], $data['password'])){
-        throw new \InvalidParams(
+        throw new InvalidParams(
             "Missing Parameters",
             "",
             "Invalid Request",

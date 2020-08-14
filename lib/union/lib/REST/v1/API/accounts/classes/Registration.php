@@ -8,6 +8,7 @@ use Moycroft\API\internal\mysql\Connect;
 use Union\API\communications\external\SMS;
 use Union\API\managers\GUID;
 \Union\PKG\Autoloader::import__require("API.managers.mysql");
+\Union\PKG\Autoloader::import__require("API.communications.external");
 class Registration
 {
     static function add_to_registration($name_first, $name_last, $phone_number, $email_address, $password){
@@ -93,7 +94,7 @@ class Registration
         try {
             $connection = new Connect();
             $connection->connect();
-            $result = $connection->query("INSERT INTO `gather-accounts-registration_holding` (
+            $result = $connection->query("INSERT INTO slately_users.`security_auth_accounts_registration-holding` (
                                                     account_phone_number,
                                                     account_email,
                                                     account_name_first,
@@ -130,7 +131,7 @@ class Registration
         $email = ($email != null) ? ($connect->cleanString($email)) : null;
 
         if ($phone_number !== null){
-            $return = $connect->query("SELECT * FROM `gather-accounts-registration_holding` WHERE account_phone_number='$phone_number'", true);
+            $return = $connect->query("SELECT * FROM slately_users.`security_auth_accounts_registration-holding` WHERE account_phone_number='$phone_number'", true);
             if (sizeof($return) != 0){
                 return [
                     'verified' => [
@@ -151,7 +152,7 @@ class Registration
             }
         }
         if ($email !== null){
-            $return = $connect->query("SELECT * FROM `gather-accounts-registration_holding` WHERE account_email='$email'", true);
+            $return = $connect->query("SELECT * FROM slately_users.`security_auth_accounts_registration-holding` WHERE account_email='$email'", true);
             if (sizeof($return) != 0){
                 return [
                     'verified' => [
@@ -202,7 +203,7 @@ class Registration
             true);
         $connection = new Connect();
         $connection->connect();
-        $connection->query("DELETE FROM `gather-accounts-registration_holding` WHERE guid='$GUID'");
+        $connection->query("DELETE FROM slately_users.`security_auth_accounts_registration-holding` WHERE guid='$GUID'");
         $connection->disconnect();
         return true;
     }
@@ -229,10 +230,10 @@ class Registration
         }
         $connection = new Connect();
         $connection->connect();
-        if (sizeof($connection->query("SELECT * FROM `gather-accounts-registration_holding` where TIMESTAMPDIFF( SECOND , last_sms_sent, NOW()) < 60 and account_phone_number = '$number'", true)) > 0){
+        if (sizeof($connection->query("SELECT * FROM slately_users.`security_auth_accounts_registration-holding` where TIMESTAMPDIFF( SECOND , last_sms_sent, NOW()) < 60 and account_phone_number = '$number'", true)) > 0){
             throw new \APIException("Too many requests too quickly", null, "You must wait 60 seconds before you can request again.", "", false);
         }
-        $connection->query("UPDATE `gather-accounts-registration_holding` SET last_sms_sent=NOW() WHERE account_phone_number='$number'");
+        $connection->query("UPDATE slately_users.`security_auth_accounts_registration-holding` SET last_sms_sent=NOW() WHERE account_phone_number='$number'");
         $SMS = new SMS();
         $SMS->set_to_number($number);
         $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
@@ -265,7 +266,7 @@ class Registration
         $email_standard = $email;
         $connection = new Connect();
         $connection->connect();
-        $connection->query("UPDATE `gather-accounts-registration_holding` SET last_email_sent=NOW() WHERE account_email='$email' and account_email = '$email_standard'");
+        $connection->query("UPDATE slately_users.`security_auth_accounts_registration-holding` SET last_email_sent=NOW() WHERE account_email='$email' and account_email = '$email_standard'");
         $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $confirmation_hash = urlencode(password_hash("CONFIRM".$email, PASSWORD_BCRYPT));
         $email = urlencode(base64_encode($email));
@@ -276,7 +277,6 @@ class Registration
             $email_obj->set_subject("Test");
             $email_obj->set_template_id("d-5a91f4566be64192ba1bbd41417f5944");
             $email_obj->set_options(['name_first' => $name, 'confirm_link' => $actual_link.$append]);
-            echo "gg";
             var_dump($email_obj->send());
 
     }
@@ -289,16 +289,14 @@ class Registration
             return false;
         }
         if (!self::is_in_registration($number)){
-            echo "Not Found";
             return false;
         }
         if (!password_verify( "CONFIRM".$number, $validation_hash)){
-            echo "hash Failed ";
             return false;
         }
         $connection = new Connect();
         $connection->connect();
-        $connection->query("UPDATE `gather-accounts-registration_holding` SET verification_phone_number='1' WHERE account_phone_number='$number'");
+        $connection->query("UPDATE slately_users.`security_auth_accounts_registration-holding` SET verification_phone_number='1' WHERE account_phone_number='$number'");
         self::attemptActivation();
         return true;
     }
@@ -328,7 +326,7 @@ class Registration
         }
         $connection = new Connect();
         $connection->connect();
-        $connection->query("UPDATE `gather-accounts-registration_holding` SET verification_email='1' WHERE account_email='$email'");
+        $connection->query("UPDATE slately_users.`security_auth_accounts_registration-holding` SET verification_email='1' WHERE account_email='$email'");
         self::attemptActivation();
         return true;
     }
@@ -336,7 +334,7 @@ class Registration
     static function getRegistrarData($GUID){
         $connection = new Connect();
         $connection->connect();
-        $data = $connection->query("SELECT * FROM `gather-accounts-registration_holding` WHERE guid = '$GUID'", true);
+        $data = $connection->query("SELECT * FROM slately_users.`security_auth_accounts_registration-holding` WHERE guid = '$GUID'", true);
         if (sizeof($data) == 0){
             return false;
         }

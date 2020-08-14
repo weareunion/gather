@@ -7,12 +7,18 @@ namespace Union\processor;
 use Union\API\accounts\Account;
 use Union\API\accounts\Registration;
 use Union\API\security\Auth;
+use Union\Exceptions\AuthControllerException;
+use Union\Exceptions\Invalid2FA;
+use Union\Exceptions\InvalidParams;
+use Union\PKG\Autoloader;
 
 function run($data){
 
+    Autoloader::import__require("API.accounts, API.security");
+
     $valid_modes = ['login', 'signup', '2fa'];
     if (!is_array($data)){
-        throw new \InvalidParams(
+        throw new Invalid2FA(
             "Input DATA is not of type array.",
             "",
             "Invalid Request",
@@ -21,7 +27,7 @@ function run($data){
             1001);
     }
     if (!isset($data['mode']) || !in_array(strtolower($data['mode']), $valid_modes)){
-        throw new \InvalidParams(
+        throw new InvalidParams(
             "Mode not given or is invalid",
             "",
             "Invalid Request",
@@ -29,10 +35,11 @@ function run($data){
             false,
             1001);
     }
+
     switch ($data['mode']){
         case 'login':
             if (!isset($data['credentials']['user'])){
-                throw new \InvalidParams(
+                throw new InvalidParams(
                     "Missing user ID or password",
                     "",
                     "Invalid Request",
@@ -45,7 +52,9 @@ function run($data){
             $account_id = null;
             $data['credentials']['user'] = strtolower($data['credentials']['user']);
             $lookup_email = Account::lookup_email($data['credentials']['user']);
+
             if (!$lookup_email){
+
                 $exists = false;
                 $lookup_phone = Account::lookup_phone_number($data['credentials']['user']);
                 if ($lookup_phone) {
@@ -54,6 +63,7 @@ function run($data){
                 }else{
                     $exists = false;
                 };
+
             }else{
                 $account_id = $lookup_email;
                 $exists = true;
@@ -66,14 +76,17 @@ function run($data){
                 }else{
                     $phone = preg_replace("/[^0-9]/", "", $data['credentials']['user']);
                 }
+
                 $in_records = Registration::is_in_registration($phone, $email);
+
                 if (is_array($in_records)){
+
                     return [
                         'status' => 'in_registration',
                         'content' => $in_records
                     ];
                 }else{
-                    throw new \AuthControllerException(
+                    throw new AuthControllerException(
                         "Account record could not be found using provided ID",
                         "",
                         "We don't recognize an account with this email or phone number.",

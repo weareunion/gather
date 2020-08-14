@@ -3,10 +3,13 @@ namespace Union\processor;
 
 use Union\API\accounts\Registration;
 use Union\API\Respondus\RespondusException;
+use Union\Exceptions\APIException;
+use Union\Exceptions\InvalidParams;
+
 function run($data){
 
     if (!isset($data['type'], $data['identifier'])){
-        throw new \InvalidParams(
+        throw new InvalidParams(
             "Missing Parameters",
             "",
             "Invalid Request",
@@ -16,7 +19,7 @@ function run($data){
     }
     $data_pull = Registration::getRegistrarData($data['identifier']);
     if (!isset($data_pull[0]['account_phone_number'])){
-        throw new \InvalidParams(
+        throw new InvalidParams(
             "Could not find records",
             "",
             "Invalid Request",
@@ -34,7 +37,7 @@ function run($data){
         Registration::send_conformation_email($data_pull[0]['account_email'], $data_pull[0]['account_first_name']);
         return true;
     }else{
-        throw new \APIException("Inactive Target", "Target is not phone or email", null, null, true);
+        throw new APIException("Inactive Target", "Target is not phone or email", null, null, true);
     }
 
 }

@@ -1,5 +1,5 @@
 <?php
-
+namespace Union\Exceptions;
 interface IException
 {
     /* Protected methods inherited from Exception class */
@@ -91,6 +91,7 @@ class SecurityException extends APIException{};
         class AuthControllerException extends AuthException{};
             class InvalidPassword extends AuthControllerException {};
             class Invalid2FA extends AuthControllerException {};
+        class UnauthorizedRequest extends AuthException {};
 
 
     /**

@@ -32,10 +32,20 @@ class Autoloader
         return true;
     }
     static function import__require($package_name){
-        return self::load(self::parse($package_name, true), true);
+        $names = explode(",", $package_name);
+        foreach ($names as $name){
+            $name = trim($name);
+            self::load(self::parse($name, true), true);
+        }
+        return;
     }
     static function import($package_name){
-        return self::load(self::parse($package_name, false), false);
+        $names = explode(",", $package_name);
+        foreach ($names as $name){
+            $name = trim($name);
+            self::load(self::parse($name, false), false);
+        }
+        return;
     }
 
      static function parse($package_name, $throw=true){

@@ -192,7 +192,7 @@ class Process extends Respondus
 
 //
 
-        $execution_target_directory = __DIR__ . "/../../../API/";
+        $execution_target_directory = UNION_API_DIRECTORY;
 
         if ($this->execution_type == "special") {
             $execution_target_directory = __DIR__ . "/../processors/";
@@ -201,9 +201,7 @@ class Process extends Respondus
         if ($this->execution_type == 'api') {
             array_shift($interpret);
         }
-
         $execution_target_directory .= implode("/", $interpret) . (($this->execution_type == 'api') ? "/processors/" : "");
-
         $execution_target_directory = realpath($execution_target_directory);
 
 

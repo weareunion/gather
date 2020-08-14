@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{index, instascan, jquery.mask, jquery.slim, password, pwstrength-bootstrap, require}" />
+    <file url="PROJECT" libraries="{Chart.bundle, all, chart.js, index, instascan, jquery, jquery.mask, jquery.slim, nouislider, odometer, password, pwstrength-bootstrap, require, simplebar, theme}" />
   </component>
 </project>

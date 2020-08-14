@@ -6,3 +6,7 @@ require_once "/lib/union/lib/REST/v1/autoloader/classes/exceptions/InvalidLocato
 require_once "/lib/union/lib/REST/v1/autoloader/classes/exceptions/MissingFile.php";
 require_once "/lib/union/lib/REST/v1/autoloader/classes/exceptions/MissingPackage.php";
 require_once "/lib/union/lib/REST/v1/autoloader/classes/Autoloader.php";
+
+// Required Classes
+
+\Union\PKG\Autoloader::import__require("API.interface");

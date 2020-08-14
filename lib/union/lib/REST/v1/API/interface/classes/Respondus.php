@@ -3,6 +3,7 @@
 namespace Union\API\Respondus;
 
 use Exception;
+use Union\Exceptions\APIException;
 use function Union\processor\run;
 
 define("RESPONDUS_RESPONSE_TYPE_SUCCESS", 1);
@@ -62,7 +63,7 @@ class Respondus
                         exit();
                     }
                 );
-            } catch (\APIException $exception) {
+            } catch (APIException $exception) {
                 Respondus::announce(RESPONDUS_RESPONSE_TYPE_ERROR, $exception->data);
                 exit();
             } catch (Exception $exception) {
@@ -192,7 +193,7 @@ class Process extends Respondus
 
 //
 
-        $execution_target_directory = __DIR__ . "/../../../API/";
+        $execution_target_directory = UNION_API_DIRECTORY . "/";
 
         if ($this->execution_type == "special") {
             $execution_target_directory = __DIR__ . "/../processors/";
@@ -203,7 +204,6 @@ class Process extends Respondus
         }
 
         $execution_target_directory .= implode("/", $interpret) . (($this->execution_type == 'api') ? "/processors/" : "");
-
         $execution_target_directory = realpath($execution_target_directory);
 
 

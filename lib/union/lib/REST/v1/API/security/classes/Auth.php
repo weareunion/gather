@@ -8,10 +8,14 @@ use Moycroft\API\internal\mysql\Connect;
 use Union\API\accounts\Account;
 use Union\API\communications\external\SMS;
 use Union\API\managers\GUID;
+use Union\Exceptions\AuthControllerException;
+use Union\Exceptions\Invalid2FA;
+
 \Union\PKG\Autoloader::import__require("API.managers.mysql");
+\Union\PKG\Autoloader::import__require("API.communications.external, API.accounts");
 class Auth
 {
-    public static $login_target = "http://tiig.ga/web/client/login.php";
+    public static $login_target = SLATELY_WEBSTACK_HREF_PAGE_LOGIN;
     static function verify_credentials($account_id, $password){
         if (!Account::account_exists($account_id)){
             return false;
@@ -19,7 +23,7 @@ class Auth
 
         $connection = new Connect();
         $connection->connect();
-        $data = $connection->query("SELECT `password_hashed` FROM `gather-accounts` WHERE account_id='$account_id'", true);
+        $data = $connection->query("SELECT `password_hashed` FROM slately_users.`security_auth-general_account_profiles` WHERE account_id='$account_id'", true);
         if (sizeof($data) == 0){
             return false;
         }
@@ -37,7 +41,7 @@ class Auth
         $_SESSION['auth']['2FA']['required'] = true;
         $_SESSION['auth']['2FA']['confirmed'] = false;
         $_SESSION['auth']['2FA']['in2FA'] = false;
-        return true;
+        return false;
     }
 
     static function send2FA($accountID){
@@ -55,11 +59,11 @@ class Auth
     static function confirm2FA($number){
         if (isset($_SESSION['auth']['2FA']['tries'])){
             if ($_SESSION['auth']['2FA']['tries'] < 1){
-                throw new \Invalid2FA("Too many attempts.", "", "Unfortunately this code has been attempted too many times. Please close the page and try again.", "", false);
+                throw new Invalid2FA("Too many attempts.", "", "Unfortunately this code has been attempted too many times. Please close the page and try again.", "", false);
             }
         }
         if (!isset($_SESSION['auth']['2FA']['code'] )){
-            throw new \AuthControllerException(
+            throw new AuthControllerException(
                 "2FA Code has not been sent yet.",
                 ""
             );
@@ -72,7 +76,7 @@ class Auth
             }else{
                 $_SESSION['auth']['2FA']['tries']--;
             }
-            throw new \Invalid2FA("Incorrect 2FA code",
+            throw new Invalid2FA("Incorrect 2FA code",
             "",
             "The code is incorrect.",
             "",
@@ -100,8 +104,8 @@ class Auth
         $id = GUID::generate();
         $connection = new Connect();
         $connection->connect();
-        $connection->query("DELETE FROM `gather-auth_remember` WHERE account_id= '$account_id';");
-        $connection->query("INSERT INTO `gather-auth_remember` (user, additional_data, age, token, IP_address, IP_trusted, account_id) VALUES ('$email', '', NOW(), '$id', '".self::ip_get()."', '".self::ip_check(self::ip_get())."', '".$account_id."');");
+        $connection->query("DELETE FROM slately_users.`security_auth-persistence` WHERE account_id= '$account_id';");
+        $connection->query("INSERT INTO slately_users.`security_auth-persistence` (user, additional_data, age, token, IP_address, IP_trusted, account_id) VALUES ('$email', '', NOW(), '$id', '".self::ip_get()."', '".self::ip_check(self::ip_get())."', '".$account_id."');");
         setcookie("PERSISTENCE", $id, time()+(3600*24*31));
     }
 
@@ -109,7 +113,7 @@ class Auth
         if (!isset($_COOKIE['PERSISTENCE'])) return false;
         $connection = new Connect();
         $connection->connect();
-        $val = $connection->query("SELECT * FROM `gather-auth_remember` WHERE token='".$_COOKIE['PERSISTENCE']."';", true);
+        $val = $connection->query("SELECT * FROM slately_users.`security_auth-persistence` WHERE token='".$_COOKIE['PERSISTENCE']."';", true);
         if (sizeof($val) == 0){
             setcookie('PERSISTENCE', null, -1, '/');
             return false;
@@ -124,7 +128,7 @@ class Auth
     }
 
     static function bounce_back(){
-        if (self::logged_in()) return true;
+        if (self::logged_in()){ return true;}
         $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         ob_clean();
         header("Location: " . self::$login_target . "?destination=".urlencode(base64_encode(urlencode($actual_link))));
@@ -135,6 +139,11 @@ class Auth
         if (!isset($_SESSION['auth']['active']) || !$_SESSION['auth']['active'] || !isset($_SESSION['auth']['user'])){
             return false;
         }else{
+
+//            if (!Account::account_exists($_SESSION['auth']['user'])){
+//                self::close_session();
+//                return false;
+//            }
             return $_SESSION['auth']['user'];
         }
     }

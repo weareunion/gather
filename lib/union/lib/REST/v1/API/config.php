@@ -6,7 +6,6 @@ ini_set("session.gc_maxlifetime", 60*24*5*60);
 
 // php.ini setting required for session timeout.
 
-ini_set("session.gc_maxlifetime",30);
 ini_set("session.gc_probability",1);
 ini_set("session.gc_divisor",1);
 
