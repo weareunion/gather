@@ -2,9 +2,12 @@
 
 namespace Union\API\accounts;
 use Moycroft\API\internal\mysql\Connect;
+use Union\API\security\Auth;
 use Union\Exceptions\AccountAlreadyExists;
 use Union\Exceptions\DatabaseInsertionError;
 use Union\Exceptions\InvalidParams;
+use Union\Exceptions\Unauthorized;
+use Union\PKG\Autoloader;
 
 \Union\PKG\Autoloader::import__require("API.managers.mysql");
 class Account
@@ -156,21 +159,39 @@ class Account
         }
     }
     static function account_exists($account_id){
+        $account_id = self::strict_logged_in($account_id);
         $connection = new Connect();
         $connection->connect();
         return !(sizeof($connection->query("SELECT * FROM slately_users.`security_auth-general_account_profiles` WHERE account_id='$account_id'", true)) == 0);
     }
-    static function get_first_name($account_id){
+    static function get_first_name($account_id=null){
+        $account_id = self::strict_logged_in($account_id);
         return self::get_account_param($account_id, 'first_name');
     }
-    static function get_last_name($account_id){
+    static function get_last_name($account_id=null){
+        $account_id = self::strict_logged_in($account_id);
         return self::get_account_param($account_id, 'last_name');
     }
-    static function get_phone_number($account_id){
+    static function get_phone_number($account_id=null){
+        $account_id = self::strict_logged_in($account_id);
         return self::get_account_param($account_id, 'phone_number');
     }
-    static function get_email($account_id){
+    static function get_email($account_id=null){
+        $account_id = self::strict_logged_in($account_id);
         return self::get_account_param($account_id, 'email_address');
+    }
+    static function get_current_account(){
+        Autoloader::import__require("API.security");
+        return Auth::logged_in();
+    }
+    static function strict_logged_in($alt=null){
+        $status = self::get_current_account();
+        if ($status == null && $alt == null){
+            throw new Unauthorized("User account must be given.", "", "You must log in before you can do this action.", "");
+        }else{
+            if ($status == null) return $alt;
+            return $status;
+        }
     }
     static function get_account_param($account_id, $peram_name){
         if (!self::account_exists($account_id)) return false;

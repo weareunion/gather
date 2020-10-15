@@ -88,6 +88,26 @@ class Connect
             return false;
         }
     }
+    public function multi_query($query, $pullData=false){
+        $this->autoConnect();
+        global $verbose;
+        $resp = mysqli_multi_query($this->conn, $query);
+        if ($resp) {
+            if (!$this->silent) {
+                echo("Error: " . $query . "<br>" . mysqli_error($this->conn));
+                Log::message("Query ($query) executed successfully.", "success");
+//                echo();
+            }
+            if ($pullData){
+                return $this->getData($resp);
+            }else {
+                return $resp;
+            }
+        } else {
+            echo("Error: " . $query . "<br>" . mysqli_error($this->conn));
+            return false;
+        }
+    }
     private function autoConnect(){
         if ($this->conn == null){
             $this->connect();
@@ -112,6 +132,14 @@ class Connect
     public function getConn(){
         $this->autoConnect();
         return $this->conn;
+    }
+
+    public function transaction($flag=MYSQLI_TRANS_START_READ_WRITE){
+        mysqli_begin_transaction($this->conn, $flag);
+    }
+
+    public function commit(){
+        mysqli_commit($this->conn);
     }
 
     static $logCount = 0;

@@ -104,6 +104,7 @@ function run($data){
                     ]
                 ];
             }
+
             if (Auth::verify_credentials($account_id, $data['credentials']['password'])){
                 if (Auth::require2FA($account_id)){
                     Auth::send2FA($account_id);
@@ -118,7 +119,7 @@ function run($data){
                         'next_steps' => 'none'];
                 }
             }else{
-                throw new \AuthControllerException(
+                throw new AuthControllerException(
                     "Invalid Username and Password Combination",
                     "",
                     "Whoops! That password did not match.",

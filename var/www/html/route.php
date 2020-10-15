@@ -5,7 +5,7 @@ echo \Union\API\security\Auth::logged_in();
 \Union\API\security\Auth::bounce_back();
 if (!isset($_GET['destination'])){
     ob_clean();
-    header("Location: home");
+    header("Location: /");
     ob_flush();
 }else{
     ob_clean();

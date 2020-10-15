@@ -40,6 +40,8 @@ class RespondusException extends Exception
         return $this->data;
     }
 }
+class InvalidDelta extends \Union\API\Respondus\RespondusException{};
+
 
 class Respondus
 {

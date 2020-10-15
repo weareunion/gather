@@ -1,5 +1,7 @@
 <?php
 namespace Union\Exceptions;
+use Union\PKG\Autoloader;
+
 interface IException
 {
     /* Protected methods inherited from Exception class */
@@ -92,6 +94,16 @@ class SecurityException extends APIException{};
             class InvalidPassword extends AuthControllerException {};
             class Invalid2FA extends AuthControllerException {};
         class UnauthorizedRequest extends AuthException {};
+
+//API.venues
+class VenueException extends APIException{};
+    class NoActiveVenue extends VenueException{};
+
+//Disabled Features
+class FeatureDown extends APIException{};
+class FeatureNotActive extends APIException{};
+class FeatureDisabled extends APIException{};
+
 
 
     /**

@@ -29,7 +29,7 @@ if ($time < "12") {
             }
 ?>
 
-<?php require_once __DIR__ . "src/php/elements/container/container_start.php"; ?>
+<?php require_once __DIR__ . "/src/php/elements/container/container_start.php"; ?>
 <meta charset="utf-8">
 <title>Slately | Login
 </title>

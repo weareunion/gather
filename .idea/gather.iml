@@ -19,5 +19,10 @@
     <orderEntry type="library" name="chart.js" level="application" />
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="all" level="application" />
+    <orderEntry type="library" name="animate.css" level="application" />
+    <orderEntry type="library" name="toastr.js" level="application" />
+    <orderEntry type="library" name="micromodal" level="application" />
+    <orderEntry type="library" name="smooth-scroll.polyfills" level="application" />
+    <orderEntry type="library" name="Google Maps API" level="application" />
   </component>
 </module>

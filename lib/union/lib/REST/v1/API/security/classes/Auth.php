@@ -20,7 +20,6 @@ class Auth
         if (!Account::account_exists($account_id)){
             return false;
         }
-
         $connection = new Connect();
         $connection->connect();
         $data = $connection->query("SELECT `password_hashed` FROM slately_users.`security_auth-general_account_profiles` WHERE account_id='$account_id'", true);

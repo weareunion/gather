@@ -1022,7 +1022,7 @@ if (\Union\API\security\Auth::logged_in()){
                             <p class="pb-3" onclick="Page.toggle_mode()"><a class="text-primary">Switch to Count Mode</a></p>
                             <button type="button" class="btn btn-primary" onclick="alert('test');">
                                 <i class="fe-file-text mr-2"></i>
-                                Download a Report
+                                Open Reports
                             </button>
 <!--                            <h5>Trendline</h5>-->
 <!--                            <p>View the average attendance of your venue.</p>-->
@@ -1163,13 +1163,11 @@ if (\Union\API\security\Auth::logged_in()){
 
     }
     Page.increase = function(amount) {
-        Page.beacon.getCurrentCount();
         Page.delta += amount;
         Page.count += amount;
         Page.update_count();
     }
      Page.decrease = function(amount) {
-        Page.beacon.getCurrentCount();
         if ((Page.count - amount) < 0){
             Page.count = 0;
         }else {
@@ -1180,12 +1178,13 @@ if (\Union\API\security\Auth::logged_in()){
     }
     Page.reset = function(amount) {
         Page.beacon.hesitation = 20000;
-        Page.count = 0;
         Page.delta -= Page.count;
+        Page.count = 0;
         Page.update_count();
     }
     Page.update_count = function(stopPost=false) {
         if (!stopPost)Page.beacon.hesitate();
+        Page.modify_count(Page.count);
         if (Page.count <= 5){
             $("#dec_5").addClass("disabled");
             if (Page.count <=1){
@@ -1218,10 +1217,16 @@ if (\Union\API\security\Auth::logged_in()){
             Page.user.mode = 'view'
         }
         if (Page.user.mode === 'count'){
+            Page.beacon.stop_update();
+            Page.beacon.start_update(1000);
+            Page.beacon.update_sesitive = true;
             $("#counter_mode").addClass('show')
             $("#view_mode").removeClass('show')
             $("#graph_view").removeClass('show')
         }else {
+            Page.beacon.stop_update();
+            Page.beacon.start_update(1000);
+            Page.beacon.update_sesitive = false;
             $("#counter_mode").removeClass('show')
             $("#view_mode").addClass('show')
             $("#graph_view").addClass('show')
@@ -1237,6 +1242,7 @@ if (\Union\API\security\Auth::logged_in()){
     Page.beacon.wake = function(){
         Page.beacon.timeout = setTimeout(Page.beacon.send, Page.beacon.hesitation);
     }
+    Page.beacon.update_sesitive = false;
     Page.beacon.send = function(){
         if (Page.count_ready === false) return;
         Page.beacon.hesitation = 1000;
@@ -1246,24 +1252,54 @@ if (\Union\API\security\Auth::logged_in()){
         server.set_data({
             delta: Page.delta
         });
-        server.send().then(function (){
+        server.send().then(function (data){
             Page.delta = 0;
+            data = JSON.parse(data)
+            console.log(data);
+            Page.count = parseInt(data.current_count);
         }).catch(
 
         );
     }
+    Page.beacon.update_interval = null;
+    Page.beacon.update = function (){
+        Page.beacon.getCurrentCount().then(function (){
+            if (Page.beacon.update_sesitive && Page.delta != 0) return false;
+            Page.update_count(true);
+        })
+    }
     Page.beacon.getCurrentCount = function(){
+        if (Page.beacon.update_sesitive && Page.delta != 0) return false;
         return new Promise(function (resolve, reject) {
             Page.count_ready = true;
-            let server_count = Page.count;
-            Page.count = server_count;
-            Page.update_count(true);
-            resolve(server_count);
+            let server = new HTTPClient();
+            server.set_service("API.venues.management.tools.counter");
+            server.set_action("pull_update");
+            server.send().then(
+                function (data){
+                    data = JSON.parse(data)
+                    console.log(data);
+                    Page.count = parseInt(data.current_count);
+                    resolve(data.current_count);
+                }
+            );
         })
 
     }
+    Page.beacon.start_update = function(interval = 1000){
+        Page.beacon.update_interval = setInterval(Page.beacon.update, interval);
+    }
+    Page.beacon.stop_update = function (){
+        clearInterval(Page.beacon.update_interval);
+    }
     $(document).ready(function () {
-        Page.beacon.getCurrentCount();
+        Page.count = 0;
+        Page.beacon.getCurrentCount().then(
+            function (){
+                Page.update_count(true)
+            }
+        );
+        Page.beacon.start_update(1000);
     });
 </script>
 </body>
