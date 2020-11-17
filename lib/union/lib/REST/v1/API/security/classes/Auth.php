@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Union\API\security;
 
 
@@ -11,7 +10,7 @@ use Union\API\managers\GUID;
 use Union\Exceptions\AuthControllerException;
 use Union\Exceptions\Invalid2FA;
 
-\Union\PKG\Autoloader::import__require("API.managers.mysql");
+\Union\PKG\Autoloader::import__require("API.managers.mysql, API.managers");
 \Union\PKG\Autoloader::import__require("API.communications.external, API.accounts");
 class Auth
 {

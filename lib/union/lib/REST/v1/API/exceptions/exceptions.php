@@ -30,7 +30,7 @@ abstract class FormattedException extends \Exception implements IException
      */
     public $data;
 
-    public function __construct($internal_title, $internal_description, $external_title = null, $external_description = null, $no_external_facing_EC = false, $code = 0)
+    public function __construct($internal_title, $internal_description = "None.", $external_title = null, $external_description = null, $no_external_facing_EC = false, $code = 0)
     {
         // some code
         $this->data = [
@@ -98,6 +98,21 @@ class SecurityException extends APIException{};
 //API.venues
 class VenueException extends APIException{};
     class NoActiveVenue extends VenueException{};
+
+//API.transactions
+class TransactionAccountException extends APIException{};
+    class TransactionAccountCreationFailure extends TransactionAccountException{};
+class TransactionException extends APIException{};
+    class TransactionDoesNotExist extends TransactionException{};
+    class TransactionAlreadyExists extends TransactionException{};
+    class AccountLocked extends TransactionException{};
+    class InvalidTransaction extends TransactionException{};
+    class InvalidTransactionType extends TransactionException{};
+    class InvalidTransactionStatus extends TransactionException{};
+    class InsufficientFunds extends TransactionException{};
+    class TransactionProcess extends TransactionException{};
+        class TransactionFailed extends TransactionProcess{};
+
 
 //Disabled Features
 class FeatureDown extends APIException{};

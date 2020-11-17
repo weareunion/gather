@@ -13,7 +13,8 @@ class Autoloader
     static $standard_load_order  = [
         "config" => [],
         "exceptions" => [],
-        "classes" => []
+        "classes" => [],
+        "extends" => []
     ];
     static $load_order_persistent = false;
     static function set_load_order($load_order, $persistent=false, $default=false){

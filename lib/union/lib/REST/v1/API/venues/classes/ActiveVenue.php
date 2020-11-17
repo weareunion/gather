@@ -38,4 +38,10 @@ class ActiveVenue
         self::plate();
         return (new Venue(Session::get_current_session()->get("API.venues.ActiveVenue.currentVenue")));
     }
+
+    //TODO: IMPORTANT! Implement rank function
+    static function getRank(){
+//        if (self::get() == NULL) return false;
+        return 4;
+    }
 }

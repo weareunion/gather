@@ -1,0 +1,29 @@
+{
+  "project" : "spring-ember-278604",
+  "servers": [
+    {
+      "type": "database",
+      "name": "slately-private-db-ms-sc-01",
+      "display_name": "Slately Master Database",
+      "description": "Master Database for Slately",
+      "use_zone": true,
+      "zone": "us-east1-b",
+      "instance_name": "database-server",
+      "cred": {
+        "user" : "fleetmanager"
+      }
+    },
+    {
+      "type": "webserver",
+      "name": "gather-public-ws-sc-01",
+      "display_name": "Gather Public WebServer",
+      "description": "Slatley Webserver allotted only for Gather and FourOaks",
+      "use_zone": true,
+      "zone": "us-east1-b",
+      "instance_name": "slately-public-ws-southcarolina-01",
+      "cred": {
+        "user": "fleetmanager"
+      }
+    }
+  ]
+}
