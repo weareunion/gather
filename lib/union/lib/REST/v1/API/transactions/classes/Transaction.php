@@ -97,33 +97,33 @@ class Transaction
         if ($account->is_locked()) throw new AccountLocked("This account was locked and cannot be used in a transaction", "Reason: ".$account->is_locked(), "It seems like your account has been locked.", "Please contact support if you believe this was in error.");
         $this->source = $account;
         // Add to update list
-        array_push($this->changes, 'source');
+        $this->changes[] = 'source';
     }
     public function set_destination(Account $account){
         $this->destination = $account;
         // Add to update list
-        array_push($this->changes, 'destination');
+        $this->changes[] = 'destination';
     }
     public function set_amount($amount){
         $this->amount = $amount;
         // Add to update list
-        array_push($this->changes, 'amount');
+        $this->changes[] = 'amount';
     }
     public function set_type($type){
         // Verify valid type
-        if (!in_array($type, $this->possible_types)) throw new InvalidTransactionType("The transaction type '$type' is invalid.", "Check inline docs.");
+        if (!in_array($type, $this->possible_types, true)) throw new InvalidTransactionType("The transaction type '$type' is invalid.", "Check inline docs.");
         $this->type = $type;
         // Add to update list
-        array_push($this->changes, 'type');
+        $this->changes[] = 'type';
     }
     public function set_status($status, $description = ""){
         // Verify valid type
-        if (!in_array($status, $this->possible_status)) throw new InvalidTransactionStatus("The transaction status '$status' is invalid.", "Check inline docs.");
+        if (!in_array($status, $this->possible_status, true)) throw new InvalidTransactionStatus("The transaction status '$status' is invalid.", "Check inline docs.");
         $this->status_description = $description;
         $this->status = $status;
         // Add to update list
-        array_push($this->changes, 'status');
-        array_push($this->changes, 'status_description');
+        $this->changes[] = 'status';
+        $this->changes[] = 'status_description';
     }
     public function load($transaction_id){
         // Open database connection
@@ -137,7 +137,7 @@ class Transaction
         $connection->disconnect();
 
         // Check if the transaction exists
-        if (sizeof($data) == 0) throw new TransactionDoesNotExist("Transaction with ID '$transaction_id' could not be found in records.", "");
+        if (count($data) === 0) throw new TransactionDoesNotExist("Transaction with ID '$transaction_id' could not be found in records.", "");
 
         // Get the first row
         $data = $data[0];

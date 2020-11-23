@@ -74,11 +74,16 @@ class APIException extends FormattedException {};
 class InvalidParams extends APIException {};
 
 // API.cards
-class CardException extends APIException {};
-class CardCreation extends CardException {};
-class TooManyLoops extends CardException {};
-class CardNumberTaken extends CardException{};
-
+class CardException extends APIException {}
+    class CardCreationException extends CardException {}
+        class CardAlreadyExistsException extends CardCreationException {}
+        class IncompleteCardException extends CardCreationException {}
+        class ImproperCardTypeException extends CardCreationException {}
+        class UnknownCardException extends CardCreationException {}
+        class CardTransactionAccountCreationFailure extends CardCreationException {}
+    class CardUpdateException extends CardException {}
+        class CardDoesNotExistException extends CardUpdateException {}
+    class CardAuthenticationFailure extends CardException {}
 //API.accounts
 class AccountException extends APIException{};
     class AccountCreationException extends AccountException{};
@@ -109,10 +114,9 @@ class TransactionException extends APIException{};
     class InvalidTransaction extends TransactionException{};
     class InvalidTransactionType extends TransactionException{};
     class InvalidTransactionStatus extends TransactionException{};
-    class InsufficientFunds extends TransactionException{};
-    class TransactionProcess extends TransactionException{};
-        class TransactionFailed extends TransactionProcess{};
-
+    class InsufficientFunds extends TransactionException{}
+    class TransactionProcess extends TransactionException{}
+        class TransactionFailed extends TransactionProcess{}
 
 //Disabled Features
 class FeatureDown extends APIException{};
