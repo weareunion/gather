@@ -56,7 +56,7 @@ class Validity {
             $p = $this->properties->validity;
 
             // Check if card has been activated
-            if ($p->activated_on !== null) {
+            if ($p->activated_on === null) {
                 throw new CardValidityException(
                     "Card has not been activated",
                 "",
@@ -68,9 +68,9 @@ class Validity {
             if ($p->validity_start !== null && $p->validity_start > time()) {
                 throw new CardValidityException(
                     "Card was attempted to be used too early",
-                    "",
+                    "Valid from " . (new \DateTime())->setTimestamp((int)$p->validity_start)->format('F j, Y H:i a') ,
                     "Too soon!",
-                    "The card is not valid until " . (new \DateTime($p->validity_start))->format('F j, Y H:i a') . ".");
+                    "The card is not valid until " . (new \DateTime())->setTimestamp((int)$p->validity_start)->format('F j, Y H:i a') . ".");
             }
 
             // Check if the card is expired
@@ -79,7 +79,7 @@ class Validity {
                     "Card was attempted to be used too late",
                     "",
                     "Your card has expired",
-                    "Your card expired at " . (new \DateTime($p->validity_end))->format('F j, Y H:i a') . ". Please contact us if this is an error.");
+                    "Your card expired at " . (new \DateTime())->setTimestamp((int)$p->validity_start)->format('F j, Y H:i a')  . ". Please contact us if this is an error.");
             }
         }catch (\Exception $e) {
             // Only throw if false
