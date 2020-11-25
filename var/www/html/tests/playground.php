@@ -6,11 +6,11 @@ require_once "/lib/union/lib/REST/v1/build.php";
 \Union\PKG\Autoloader::import__require("API.managers");
 \Union\PKG\Autoloader::import__require("API.cards");
 \Union\PKG\Autoloader::import__require("API.transactions");
-\Union\PKG\Autoloader::import__require("API.sessions");
 
-$s = new \Union\session\Session();
-$s->set("API.cards.sessions.active", ["test"]);
-var_dump($s->get("API.cards.sessions.active"));
-var_dump($_SESSION);
+//echo var_export(\Union\API\managers\mongo\connect::get_obj()->slately->cards->find([])->toArray());
+
+$c = new \Union\API\Cards\GiftCard('20DCD62E-7AB7-405E-9A5C-588DF4A85254');
+
+echo var_export(\Union\API\managers\mongo\connect::get_obj()->slately->cards->find([])->toArray());
 echo "test";
 

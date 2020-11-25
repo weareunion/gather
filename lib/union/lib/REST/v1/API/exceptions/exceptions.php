@@ -84,6 +84,13 @@ class CardException extends APIException {}
     class CardUpdateException extends CardException {}
         class CardDoesNotExistException extends CardUpdateException {}
     class CardAuthenticationFailure extends CardException {}
+    class CardAuthenticationException extends CardException {}
+        class PinCreationException extends CardAuthenticationFailure {}
+            class InvalidPinException extends PinCreationException {};
+    class CardIssuingException extends CardException {}
+        class IssueOnTypeException extends CardIssuingException {}
+            class InvalidIssueOnTypeException extends CardIssuingException {}
+            class DisabledIssueOnTypeException extends CardIssuingException {}
 //API.accounts
 class AccountException extends APIException{};
     class AccountCreationException extends AccountException{};

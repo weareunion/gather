@@ -24,470 +24,14 @@ use Union\session\Session;
 \Union\PKG\Autoloader::import__require("API.communications");
 \Union\PKG\Autoloader::import__require("API.sessions");
 
-/**
- * A Card of type Gift Card
- * Class GiftCard
- * @package Union\API\Cards
- */
-class GiftCard extends Card {
+// Import GiftCard Extension
 
-    // Transactions waiting to be executed
-    /**
-     * @var array
-     */
-    public $awaiting_transactions;
+require_once __DIR__ . '/../stack/extensions/GiftCard.php';
 
-    /**
-     * GiftCard constructor.
-     * @param null $id
-     * @throws \Union\Exceptions\TransactionAccountCreationFailure
-     * @throws \Union\Exceptions\Unauthorized
-     */
-    public function __construct( $id=null){
-        parent::__construct($id);
-        if ($id === null) {
-            $this->properties->type = 'balance_card';
-            $this->properties->amount_current = -1;
-            $this->properties->amount_start = -1;
-        }else{
-            // Get card balance
-            $this->update_card_balance();
-        }
-        $this->awaiting_transactions = [];
-    }
+// Helper Layers for Card Parent Class
+require_once __DIR__ . '/../stack/layers/security/_classes/Security.php';
 
-    /**
-     * Reset the card amount legally
-     * @param $amount double The amount that the account should be set to
-     * @param $description string An authorization string
-     * @throws \Union\Exceptions\TransactionAccountCreationFailure Transaction accounts are created when they are needed. If there is some sort of error with it, this exception will be thrown. This is a fatal error and all processes should be aborted.
-     * @throws \Union\Exceptions\Unauthorized Thrown if account is not authorized to do this transaction or if the user is not logged in.
-     */
-    public function reset_amount( $amount, $description): void
-    {
 
-        // Create new transaction
-        $this->properties->amount_current = $amount;
-        $this->properties->amount_start = $amount;
-        $transaction = new Transaction();
-        $transaction->set_destination((new Account($this->properties->card_id)));
-        $transaction->set_amount($amount);
-        $transaction->set_type('set');
-        $transaction->description = $description;
-
-        // Add transaction to list
-        $this->awaiting_transactions[] = $transaction;
-    }
-
-
-    // Over loaded methods helper methods
-
-    /**
-     * Forces a transaction account to be created
-     * @throws CardTransactionAccountCreationFailure Transaction accounts are created using this method. This class is unusable without this helper infrastructure.
-     * @throws \Union\Exceptions\TransactionAccountCreationFailure Will Throw the exception CardTransactionAccountCreationFailure
-     * @throws \Union\Exceptions\Unauthorized Thrown if the account is not authorized to do this transaction or if the user is not logged in.
-     */
-    public function create_transaction_account(): void
-    {
-        // Ensure that card_id is set
-        if (!isset($this->properties->card_id)){
-            throw new CardTransactionAccountCreationFailure("Transaction account could not be created due to an account id not specified. Use load() or create() first.");
-        }
-        // Create new Transaction account if it does not alrady exist
-        $account = new Account($this->properties->card_id, false, 'balance_card');
-        $account->set_isCard(true);
-    }
-
-    /**
-     * Attempts to execute the awaiting transactions and will update the object upon completion
-     * @throws \Union\Exceptions\AccountLocked Will throw this exception if the account is locked
-     * @throws \Union\Exceptions\InsufficientFunds Will throw this exception if the amount of funds is insufficient to the transaction amount
-     * @throws \Union\Exceptions\InvalidTransaction A general syntax error
-     * @throws \Union\Exceptions\TransactionAlreadyExists Will throw this exception if the transaction already exists
-     * @throws \Union\Exceptions\Unauthorized|\Union\Exceptions\TransactionAccountCreationFailure Thrown if the account is not authorized to do this transaction or if the user is not logged in.
-     */
-    public function update_transaction_account(){
-        // Execute every waiting transaction
-        foreach ($this->awaiting_transactions as $transaction)
-            TransactionManager::post($transaction);
-
-        // Clear transactions
-        $this->awaiting_transactions = [];
-
-        // Update the card balance
-        $this->update_card_balance();
-    }
-
-    /**
-     * Updates the card balance from the transactional record
-     * @throws \Union\Exceptions\TransactionAccountCreationFailure Transaction accounts are created when they are needed. If there is some sort of error with it, this exception will be thrown. This is a fatal error and all processes should be aborted.
-     * @throws \Union\Exceptions\Unauthorized Thrown if the account is not authorized to do this transaction or if the user is not logged in.
-     */
-    public function update_card_balance(){
-        // Update card balance from account balance
-        $this->properties->amount_current = (new Account($this->properties->card_id))->get_balance();
-    }
-
-    // Overloaded methods
-
-    /**
-     * Creates framework for a new card of type gift card
-     * @throws CardAlreadyExistsException Thrown if the card already exists
-     * @throws CardTransactionAccountCreationFailure Transaction accounts are created when they are needed. If there is some sort of error with it, this exception will be thrown. This is a fatal error and all processes should be aborted.
-     * @throws ImproperCardTypeException Thrown if the card type is incorrect
-     * @throws IncompleteCardException Thrown when there are parameters missing
-     * @throws UnknownCardException Thrown if the card is unknown (should never throw using this method)
-     * @throws \Union\Exceptions\TransactionAccountCreationFailure Transaction accounts are created when they are needed. If there is some sort of error with it, this exception will be thrown. This is a fatal error and all processes should be aborted.
-     * @throws \Union\Exceptions\Unauthorized Thrown if the account is not authorized to do this transaction or if the user is not logged in.
-     */
-    public function create(): void{
-        // Check the proper type
-        if ($this->properties->type !== 'balance_card'){
-            throw new ImproperCardTypeException("The card type '".$this->properties->type."' is not supported by this class.");
-        }
-        if (!isset($this->properties->amount_start, $this->properties->amount_current)){
-            throw new IncompleteCardException("Not all parameters were provided.");
-        }
-
-        parent::create();
-        $this->create_transaction_account();
-    }
-
-    /**
-     * Load from an ID
-     * @param $id string ID to load object from
-     */
-    public function load( $id){
-        $res = parent::load($id);
-        $this->update_transaction_account();
-        return $res;
-    }
-
-    /**
-     * Update the card object from the according databases
-     */
-    public function update(): void{
-        $this->update_transaction_account();
-        parent::update();
-    }
-
-}
-
-// Helper Classes for Card Parent Class
-
-/**
- * Class Lockdown
- * @package Union\API\Cards
- */
-class Lockdown {
-    private $properties;
-    private $parent;
-
-    /**
-     * Lockdown constructor.
-     * @param $properties
-     * @param $parent
-     */
-    public function __construct( &$properties, Card $parent)
-    {
-        $this->properties = $properties;
-        $this->parent = $parent;
-    }
-
-    /**
-     * Lock down card and transaction account
-     * @param $reason string Reason that the card was locked_reason
-     * @param null $origin The origin of the lock
-     * @throws CardDoesNotExistException Throws if the card does not exist
-     * @throws \Union\Exceptions\Unauthorized Throws if the user is not authorized to do this action.
-     */
-    public function lockdown( $reason, $origin = null): void
-    {
-        // Ignore if transaction account cannot be created
-        try {
-            ( new Account($this->properties->card_id) )->lock($reason);
-        }catch (TransactionAccountCreationFailure $e) {}
-        $this->properties->lockdown->active = true;
-        $this->properties->lockdown->reason = $reason;
-        $this->properties->lockdown->origin = $origin;
-        $this->parent->update();
-    }
-
-    /**
-     * Unlock the card and transaction account. Keep in mind that the reason that the card might
-     * have been locked in the first place might have not been resolved
-     * @throws CardDoesNotExistException Throws if the card does not exist
-     * @throws \Union\Exceptions\Unauthorized Throw an exception if the user is not authorized to do this action
-     */
-    public function unlock(): void
-    {
-        try {
-            ( new Account($this->properties->card_id) )->unlock();
-        }catch (TransactionAccountCreationFailure $e) {}
-        $this->properties->lockdown->active = false;
-        $this->parent->update();
-    }
-}
-
-/**
- * Class Authentication
- *
- * This class is used to authenticate (or unlock) the card for use. This class
- * is NOT responsible for transaction validation and authentication
- *
- * @package Union\API\Cards
- */
-class Authentication {
-    /**
-     * @var
-     */
-    public $parent;
-    private $properties;
-
-    /**
-     * Authentication constructor.
-     * @param $properties
-     * @param $parent
-     */
-    public function __construct( &$properties, Card $parent)
-    {
-        $this->properties = $properties;
-        $this->parent = $parent;
-    }
-
-    /**-------------SESSION AUTHENTICATION METHODS-------------**/
-
-
-    /**
-     * Authenticate the current card and bind it to the current session.
-     * If no pin number is supplied, use the current session. If none of these methods work,
-     * the method will throw a CardAuthenticationFailure exception.
-     *
-     * @param null $pin If this parameter is set, then the method will attempt to use the pin authentication method.
-     * @throws CardAuthenticationFailure Thrown if all possible authentication methods have been exhausted.
-     */
-    public function authenticate($pin=null){
-        if ($pin !== null && !$this->pin_validate($pin)){
-            throw new CardAuthenticationFailure(
-                "Supplied PIN does not match records.",
-                "",
-                "Incorrect Code",
-                "It seems like the code you entered does not match our records.
-                 You can enter in the recovery code that you recived upon the activation of your card.");
-        }
-        if ($pin === null && !$this->current_account_authenticated()){
-            throw new CardAuthenticationFailure(
-                "The current account is not linked to this card.",
-                "",
-                "The ",
-                "It seems like your account is not linked to this card.
-                 You can enter in the recovery code that you recived upon the activation of your card to revert this change.");
-        }
-
-        // ------ Begin Session Auth -----
-
-        // Get activated cards
-        $exsts = Session::get_current_session()->get("API.cards.session.active");
-
-        // Check if any activated cards already exist
-        if ($exsts === null) {
-            $exsts = [];
-        }
-
-        // Add card ID
-        $exsts[] = $this->properties->card_id;
-
-        // Add to session
-        Session::get_current_session()->set("API.cards.session.active", $exsts);
-    }
-
-    /**
-     * Check if current card is authenticated for session
-     * @return bool returns true if authenticated for the current session
-     */
-    public function is_authenticated(){
-        // Get activated cards
-        $exsts = Session::get_current_session()->get("API.cards.session.active");
-
-        // If none are registered, return false
-        if ($exsts === null) return false;
-
-        // For every key that is registered, check if there is a registration
-        foreach ($exsts as $key) if ($key === $this->properties->card_id) return true;
-
-        // Otherwise, return false
-        return false;
-    }
-
-    /**
-     * Removes current card from authentication list
-     */
-    public function deauthenticate(){
-        // Get activated cards
-        $exsts = Session::get_current_session()->get("API.cards.session.active");
-
-        // If none are registered, return
-        if ($exsts === null) return;
-
-        // For every key that is registered, check if there is a registration
-        foreach ($exsts as &$key)
-            // If the key is found, remove it from the registration list
-            if ($key === $this->properties->card_id) {
-            unset($key);
-            return;
-            }
-    }
-
-    /**-------------PIN NUMBER AUTHENTICATION METHODS-------------**/
-
-    private function generate_pin(){
-        return str_pad(random_int(0,9999), 8, '0', STR_PAD_LEFT);
-    }
-
-    public function pin_attach($pin){
-
-    }
-
-    public function pin_validate($pin): bool{
-
-    }
-
-    public function pin_revoke($pin){
-
-    }
-
-    public function pin_change($pin){
-
-    }
-
-    /**
-     * Generates and sets a backup authentication PIN for the card.
-     * @return string Generated backup pin
-     * @throws CardDoesNotExistException Throws if the card does not exist
-     */
-    public function issue_backup_pin(){
-        // Generate pin
-        $backup_pin = $this->generate_pin();
-
-        // Generate random salt
-        $bytes = random_bytes(32);
-        $salt = bin2hex($bytes);
-
-        // Add to properties list
-        $this->properties->security->authentication->methods->pin->recovery->pin_SHA = password_hash($backup_pin.$salt, PASSWORD_DEFAULT);
-        $this->properties->security->authentication->methods->pin->recovery->pin_SHA_salt = $salt;
-
-        // Push update
-        $this->parent->update();
-
-        return $backup_pin;
-    }
-
-    /**-------------ACCOUNT AUTHENTICATION METHODS-------------**/
-
-    public function current_account_authenticated(): bool{
-
-    }
-
-    public function link_account($account_id=null){
-
-    }
-
-    public function unlink_account($account_id=null){
-
-    }
-
-}
-
-/**
- * Class Authorization
- * @package Union\API\Cards
- */
-class Authorization {
-    /**
-     * @var
-     */
-    public $parent;
-
-    /**
-     * Authorization constructor.
-     * @param $properties
-     * @param $parent
-     */
-    public function __construct( &$properties, Card $parent)
-    {
-
-    }
-
-}
-
-/**
- * Class Validity
- * @package Union\API\Cards
- */
-class Validity {
-    /**
-     * @var
-     */
-    public $parent;
-
-    /**
-     * Validity constructor.
-     * @param $properties
-     * @param $parent
-     */
-    public function __construct( &$properties, &$parent)
-    {
-
-    }
-}
-
-/**
- * Class Security
- * @package Union\API\Cards
- */
-class Security  {
-    /**
-     * Object to manage structure
-     * @var
-     */
-    public $parent;
-    /**
-     * Object to manage structure
-     * @var Lockdown
-     */
-    public $lockdown;
-    /**
-     * Object to manage structure
-     * @var Authentication
-     */
-    public $authentication;
-    /**
-     * Object to manage structure
-     * @var Authorization
-     */
-    public $authorization;
-    /**
-     * Object to manage structure
-     * @var Validity
-     */
-    public $validity;
-
-    /**
-     * Security constructor.
-     * @param $properties
-     * @param Card $parent
-     */
-    public function __construct( &$properties, Card $parent)
-    {
-        // create helper classes
-       $this->lockdown = new Lockdown($properties, $parent);
-       $this->authentication = new Authentication($properties, $parent);
-       $this->authorization = new Authorization($properties, $parent);
-       $this->validity = new Validity($properties, $parent);
-    }
-}
 
 /**
  * Class Card
@@ -512,6 +56,8 @@ class Card
 //        Event Ticket:
 //        event_id => '[GUID]'
         'card_id' => '',
+        // Shown to the user. Lookup ID
+        'contingency_id' => '',
         'security' => [
             // Lock down card from being used
             'lockdown' => [
@@ -526,7 +72,7 @@ class Card
                     'account' => [
                         'account_linked' => false,
                         'account_id' => '',
-                        'linked_on' => ''
+                        'changed_on' => ''
                     ],
                     // If account has not been linked, use a pin method
                     'pin' => [
@@ -625,11 +171,32 @@ class Card
     }
 
     /**
+     * Static version to check if a card exists based on contingency id
+     * @param $id string contingency id of card to check
+     * @param false $return_bool return records if found
+     * @return array|bool returns records if found
+     */
+    public static function static_exists_contingency( $id, $return_bool=false){
+        // Try to find in bucket
+        $records = connect::get_obj()->slately->cards->find(
+            [
+                'contingency_id' => $id
+            ]
+        );
+        $records = $records->toArray();
+        if (count($records) === 0) {
+            return false;
+        }
+        if ($return_bool) return true;
+        return $records;
+    }
+
+    /**
      * Load and inject card from the storage infrastructure
      * @param $id string ID to load
      * @return false|mixed Returns the header of the cards properties
      */
-    function load( $id)
+    public function load( $id )
     {
         // Check if ID exists
         $record = self::static_exists($id);
@@ -637,7 +204,28 @@ class Card
             return false;
         }
         // if so, return and install the record
-        $this->properties = $record[0];
+        return $this->load_from_document($record[0]);
+    }
+
+    /**
+     * Load and inject card from the storage infrastructure based on contingency id
+     * @param $id string ID to load
+     * @return false|mixed Returns the header of the cards properties
+     */
+    public function load_contingency( $id )
+    {
+        // Check if ID exists
+        $record = self::static_exists_contingency($id);
+        if (!$record) {
+            return false;
+        }
+        // if so, return and install the record
+        return $this->load_from_document($record[0]);
+    }
+
+    protected function load_from_document($document){
+        // if so, return and install the record
+        $this->properties = $document;
         return $this->properties;
     }
 
@@ -657,6 +245,9 @@ class Card
 
         // Add record to DB
         $this->db->slately->cards->insertOne($this->properties);
+
+        // Create contingency code
+        $this->create_contingency(false);
 
         // Verify record exists
         if (!$this->exists()){
@@ -683,6 +274,28 @@ class Card
             ["card_id" => $this->properties->card_id],
             $this->properties
         );
+    }
+
+    /**
+     * Creates contingency string to be looked up from
+     * @param bool $update Updates the card in the database if true
+     * @return string
+     * @throws CardDoesNotExistException
+     */
+    public function create_contingency($update = true): string
+    {
+        do {
+            //Generate crypto using security salt function
+            $string = $this->security->authentication->generate_crypto_string(6);
+        }while(Card::static_exists_contingency($string));
+
+        // Set string
+        $this->properties->contingency_id = $string;
+
+        // Update card
+        $this->update();
+
+        return $string;
     }
 
 }

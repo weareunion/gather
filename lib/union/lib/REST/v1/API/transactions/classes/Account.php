@@ -46,7 +46,7 @@ class Account
         if(((!\Union\API\accounts\Account::account_exists($accountID) && !((new Venue($accountID))->load($accountID))) && !Card::static_exists($accountID)) || !Auth::logged_in())
             throw new Unauthorized(
                 "Attempted to generate account transactional object. Account with an id ('$accountID') does not exist.",
-                "Could be unauthorised.",
+                "Couldn't be unauthorised.",
                 "You must be logged in to do this action.",
                 "You don't seem to be logged in",
                 false);
