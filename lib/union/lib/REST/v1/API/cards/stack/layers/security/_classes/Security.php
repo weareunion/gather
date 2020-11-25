@@ -56,4 +56,8 @@ class Security  {
         $this->authorization = new Authorization($properties, $parent);
         $this->validity = new Validity($properties, $parent);
     }
+
+    public function create(){
+        $this->validity->create();
+    }
 }

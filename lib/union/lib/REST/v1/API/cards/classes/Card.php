@@ -88,16 +88,15 @@ class Card
                 ]
             ],
             'authorization' => [
-                'SHA_credential' => '',
-                'SHA_salt' => ''
+                'SHA_credential_set' => []
             ],
             // Card validity
             'validity' => [
-                'validity_start' => '',
-                'validity_end' => '',
-                'activated_on' => '',
-                'expires_if_not_activated_after' => '',
-                'card_created_on' => ''
+                'validity_start' => null,
+                'validity_end' => null,
+                'activated_on' => null,
+                'expires_if_not_activated_after' => null,
+                'card_created_on' => null
             ]
         ]
 
@@ -248,6 +247,9 @@ class Card
 
         // Create contingency code
         $this->create_contingency(false);
+
+        // Set up Security
+        $this->security->create();
 
         // Verify record exists
         if (!$this->exists()){
