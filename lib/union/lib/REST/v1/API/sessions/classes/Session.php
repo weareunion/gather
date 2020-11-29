@@ -19,15 +19,15 @@ class Session
         self::start_session();
         if (!isset($_SESSION['SESSION_MANAGER_DATA'])){
             $_SESSION['SESSION_MANAGER_DATA'] = [];
-        }else{
-            $return = new Session();
-            $return->pull();
-            return $return;
         }
+        $return = new Session();
+        $return->pull();
+        return $return;
     }
 
     function __construct()
     {
+        if (!defined('SESSION_MANAGER_DNO'))
         define("SESSION_MANAGER_DNO", "EE-CONSTCAT-". abs(rand(intval(111111111111111111111111111111),intval(999999999999999999999999999999))));
     }
 

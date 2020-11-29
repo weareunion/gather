@@ -7,6 +7,7 @@ use Union\API\managers\mongo\connect;
 use Union\API\transactions\Account;
 use Union\API\transactions\Transaction;
 use Union\API\transactions\TransactionManager;
+use Union\API\venues\Venue;
 use Union\Exceptions\CardAlreadyExistsException;
 use Union\Exceptions\CardAuthenticationFailure;
 use Union\Exceptions\CardDoesNotExistException;
@@ -30,6 +31,8 @@ require_once __DIR__ . '/../stack/extensions/GiftCard.php';
 
 // Helper Layers for Card Parent Class
 require_once __DIR__ . '/../stack/layers/security/_classes/Security.php';
+require_once __DIR__ . '/../stack/layers/venues/_classes/Venues.php';
+require_once __DIR__ . '/../stack/layers/transactions/_classes/Transactions.php';
 
 
 
@@ -58,6 +61,7 @@ class Card
         'card_id' => '',
         // Shown to the user. Lookup ID
         'contingency_id' => '',
+        'venue_id' => '',
         'security' => [
             // Lock down card from being used
             'lockdown' => [
@@ -98,6 +102,15 @@ class Card
                 'expires_if_not_activated_after' => null,
                 'card_created_on' => null
             ]
+        ],
+        'venues' => [
+            'associated' => []
+        ],
+        'transactions' => [
+            'unclaimed_released_funds' => 0,
+            'claimed_released_funds' => 0,
+            'global' => [],
+            'card' => []
         ]
 
     ];
@@ -116,12 +129,20 @@ class Card
      * @var \MongoDB\Client
      */
     public $db;
+    /**
+     * @var Venues
+     */
+    public $venues;
+    /**
+     * @var Transactions
+     */
+    public $transactions;
 
     /**
      * Card constructor.
      * @param null $id
      */
-    public function __construct( $id=null){
+    public function __construct( $id=null, Venue $venue=null){
         // Set up defaults
         $this->properties = json_decode(json_encode($this->defaults, JSON_THROW_ON_ERROR), FALSE, 512, JSON_THROW_ON_ERROR);
 
@@ -133,6 +154,13 @@ class Card
 
         // Create Objects
         $this->security = new Security($this->properties->security, $this);
+        $this->venues = new Venues($this->properties, $this);
+        $this->transactions = new Transactions($this->properties, $this);
+
+        // Add venue to list if not null
+        if (!is_null($venue)){
+            $this->venues->add($venue);
+        }
     }
 
 
@@ -299,5 +327,6 @@ class Card
 
         return $string;
     }
+
 
 }

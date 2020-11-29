@@ -1,4 +1,5 @@
 <?php
+
 require_once "/lib/union/lib/REST/v1/build.php";
 \Union\PKG\Autoloader::import__require("API.managers.mysql");
 \Union\PKG\Autoloader::import__require("API.security");
@@ -14,6 +15,8 @@ if (isset($_GET['destination'], $_GET['target'])){
 ?>
 
 <?php require_once "/lib/union/lib/REST/v1/API/web/UI/resources/elements/container/container_start.php"; ?>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.2/css/bulma.min.css">
+
 <meta charset="utf-8">
 <title>Slately for Venues | Your Venues
 </title>

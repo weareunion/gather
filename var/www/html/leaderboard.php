@@ -29,7 +29,7 @@ $location_search_details = [
 ];
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<div lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Slately | Search · <? echo $location_search_details['name'] ?> </title>

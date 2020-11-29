@@ -52,3 +52,127 @@ slately.search.cache.data = [];
 slately.search.cache.add = function (data){
     slately.search.cache.push(data);
 }
+slately.UI = {
+    modals: {
+        error: function (title, subtitle, primary_option='Okay', secondary_option=null){
+            $('#IMPORT_MODAL_ERROR_TITLE').html(title);
+            $('#IMPORT_MODAL_ERROR_SUBTITLE').html(subtitle);
+            $('#IMPORT_MODAL_ERROR_BUTTON_PRIMARY').html(primary_option);
+            if (secondary_option == null){
+                $('#IMPORT_MODAL_ERROR_BUTTON_SECONDARY').addClass('d-none');
+            }else{
+                $('#IMPORT_MODAL_ERROR_BUTTON_SECONDARY').html(secondary_option).removeClass('d-none');
+            }
+            $('#IMPORT_MODAL_ERROR').modal({backdrop: 'static', keyboard: false});
+            return new Promise(function (resolve, reject) {
+                $("#IMPORT_MODAL_ERROR_BUTTON_PRIMARY").click(function (){
+                    $("#IMPORT_MODAL_ERROR").modal("hide");
+                    resolve(true);
+                })
+                $("#IMPORT_MODAL_ERROR_BUTTON_SECONDARY").click(function (){
+                    $("#IMPORT_MODAL_ERROR").modal("hide");
+                    reject(false);
+                })
+            })
+        },
+        success: function (title, subtitle, primary_option='Okay', secondary_option=null){
+            $('#IMPORT_MODAL_SUCCESS_TITLE').html(title);
+            $('#IMPORT_MODAL_SUCCESS_SUBTITLE').html(subtitle);
+            $('#IMPORT_MODAL_SUCCESS_BUTTON_PRIMARY').html(primary_option);
+            if (secondary_option == null){
+                $('#IMPORT_MODAL_SUCCESS_BUTTON_SECONDARY').addClass('d-none');
+            }else{
+                $('#IMPORT_MODAL_SUCCESS_BUTTON_SECONDARY').html(secondary_option).removeClass('d-none');
+            }
+            $('#IMPORT_MODAL_SUCCESS').modal({backdrop: 'static', keyboard: false});
+            return new Promise(function (resolve, reject) {
+                $("#IMPORT_MODAL_SUCCESS_BUTTON_PRIMARY").click(function (){
+                    $("#IMPORT_MODAL_SUCCESS").modal("hide");
+                    resolve(true);
+                })
+                $("#IMPORT_MODAL_SUCCESS_BUTTON_SECONDARY").click(function (){
+                    $("#IMPORT_MODAL_SUCCESS").modal("hide");
+                    reject(false);
+                })
+            })
+        },
+        warning: function (title, subtitle, primary_option='Okay', secondary_option=null){
+            $('#IMPORT_MODAL_WARNING_TITLE').html(title);
+            $('#IMPORT_MODAL_WARNING_SUBTITLE').html(subtitle);
+            $('#IMPORT_MODAL_WARNING_BUTTON_PRIMARY').html(primary_option);
+            if (secondary_option == null){
+                $('#IMPORT_MODAL_WARNING_BUTTON_SECONDARY').addClass('d-none');
+            }else{
+                $('#IMPORT_MODAL_WARNING_BUTTON_SECONDARY').html(secondary_option).removeClass('d-none');
+            }
+            $('#IMPORT_MODAL_WARNING').modal({backdrop: 'static', keyboard: false});
+            return new Promise(function (resolve, reject) {
+                $("#IMPORT_MODAL_WARNING_BUTTON_PRIMARY").click(function (){
+                    $("#IMPORT_MODAL_WARNING").modal("hide");
+                    resolve(true);
+                })
+                $("#IMPORT_MODAL_WARNING_BUTTON_SECONDARY").click(function (){
+                    $("#IMPORT_MODAL_WARNING").modal("hide");
+                    reject(false);
+                })
+            })
+        },
+        info: function (title, subtitle, primary_option='Okay', secondary_option=null){
+            $('#IMPORT_MODAL_INFO_TITLE').html(title);
+            $('#IMPORT_MODAL_INFO_SUBTITLE').html(subtitle);
+            $('#IMPORT_MODAL_INFO_BUTTON_PRIMARY').html(primary_option);
+            if (secondary_option == null){
+                $('#IMPORT_MODAL_INFO_BUTTON_SECONDARY').addClass('d-none');
+            }else{
+                $('#IMPORT_MODAL_INFO_BUTTON_SECONDARY').html(secondary_option).removeClass('d-none');
+            }
+            $('#IMPORT_MODAL_INFO').modal({backdrop: 'static', keyboard: false});
+            return new Promise(function (resolve, reject) {
+                $("#IMPORT_MODAL_INFO_BUTTON_PRIMARY").click(function (){
+                    $("#IMPORT_MODAL_INFO").modal("hide");
+                    resolve();
+                })
+                $("#IMPORT_MODAL_INFO_BUTTON_SECONDARY").click(function (){
+                    $("#IMPORT_MODAL_INFO").modal("hide");
+                    reject();
+                })
+            })
+        },
+        fatal: function () {
+            $('#IMPORT_MODAL_ERROR_FATAL').modal({backdrop: 'static', keyboard: false})
+        },
+        loading : {
+            open : function(){
+                $("#MODAL_LOADING").modal({backdrop: 'static', keyboard: false})
+            },
+            close : function(){
+                $("#MODAL_LOADING").modal('hide')
+            }
+        }
+    },
+    qr:{
+        display_qr_element: function(e, data){
+            e.qrcode(data);
+        },
+        display_qr:  function (title, subtitle, qr_data, primary_option='Okay', secondary_option=null){
+            $('#IMPORT_MODAL_QR_TITLE').html(title);
+            $('#IMPORT_MODAL_QR_SUBTITLE').html(subtitle);
+            $('#IMPORT_MODAL_QR_BUTTON_PRIMARY').html(primary_option);
+            $('#IMPORT_MODAL_QR_CODE').html("")
+            slately.UI.qr.display_qr_element($('#IMPORT_MODAL_QR_CODE'), qr_data);
+            if (secondary_option == null){
+                $('#IMPORT_MODAL_QR_BUTTON_SECONDARY').addClass('d-none');
+            }else{
+                $('#IMPORT_MODAL_QR_BUTTON_SECONDARY').html(secondary_option).removeClass('d-none');
+            }
+            $('#IMPORT_MODAL_QR').modal({backdrop: 'static', keyboard: false});
+            return new Promise(function (resolve, reject) {
+                $("#IMPORT_MODAL_QR_BUTTON_PRIMARY").click(function (){
+                    $("#IMPORT_MODAL_QR").modal("hide");
+                    resolve();
+                })
+            })
+
+        }
+    }
+}

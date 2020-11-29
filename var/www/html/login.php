@@ -23,6 +23,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'accountAspectValidation'){
         };
     }
 }
+if (isset($_GET['action']) && ($_GET['action'] === 'terminate' || $_GET['action'] === 'logout')){
+    \Union\API\security\Auth::close_session();
+}
 $fill_in_data = "";
 if ($fill_in_target){
     $fill_in_data = base64_decode(urldecode($_GET['target']));

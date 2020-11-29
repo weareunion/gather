@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="PROJECT" libraries="{Chart.bundle, Google Maps API, all, animate.css, chart.js, index, instascan, jquery, jquery.mask, jquery.slim, micromodal, nouislider, odometer, password, pwstrength-bootstrap, require, simplebar, smooth-scroll.polyfills, theme, toastr.js}" />
+    <file url="PROJECT" libraries="{Chart.bundle, Google Maps API, all, animate.css, chart.js, index, instascan, javascript.util, jquery, jquery-maskmoney, jquery.mask, jquery.qrcode, jquery.slim, micromodal, nouislider, odometer, password, pwstrength-bootstrap, require, simplebar, smooth-scroll.polyfills, theme, toastr.js}" />
   </component>
 </project>

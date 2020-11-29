@@ -4,6 +4,7 @@ namespace Union\API\Respondus;
 
 use Exception;
 use Union\Exceptions\APIException;
+use Union\Exceptions\FormattedException;
 use function Union\processor\run;
 
 define("RESPONDUS_RESPONSE_TYPE_SUCCESS", 1);
@@ -11,34 +12,8 @@ define("RESPONDUS_RESPONSE_TYPE_ERROR", 0);
 define("RESPONDUS_RESPONSE_TYPE_UNKNOWNERROR", -1);
 
 //OVERLOAD RESPONDUS EXCEPTION FOR IMPORTS
-class RespondusException extends Exception
+class RespondusException extends FormattedException
 {
-    public $data = [];
-
-    public function __construct($internal_title, $internal_description, $external_title = null, $external_description = null, $no_external_facing_EC = false, $code = 0, Exception $previous = null)
-    {
-        // some code
-        $this->data = [
-            "external" => [
-                "title" => $external_title,
-                "description" => $external_description
-            ],
-            "internal" => [
-                "title" => $internal_title,
-                "description" => $internal_description
-            ],
-            "no_external_face" => $no_external_facing_EC,
-            "code" => $code,
-            "log_lookup" => 3000
-        ];
-        // make sure everything is assigned properly
-        parent::__construct($internal_title, $code, $previous);
-    }
-
-    public function disclose()
-    {
-        return $this->data;
-    }
 }
 class InvalidDelta extends \Union\API\Respondus\RespondusException{};
 
@@ -68,7 +43,10 @@ class Respondus
             } catch (APIException $exception) {
                 Respondus::announce(RESPONDUS_RESPONSE_TYPE_ERROR, $exception->data);
                 exit();
-            } catch (Exception $exception) {
+            } catch (RespondusException $exception) {
+                Respondus::announce(RESPONDUS_RESPONSE_TYPE_ERROR, $exception->data);
+                exit();
+            } catch (\Exception $exception) {
                 Respondus::announce(RESPONDUS_RESPONSE_TYPE_UNKNOWNERROR, $exception);
                 exit();
             }
@@ -159,10 +137,11 @@ class Respondus
                     die(500);
                     break;
             }
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             if (isset($_SESSION['FLAG_DEVELOPER_VERBOSE']) && $_SESSION['FLAG_DEVELOPER_VERBOSE']) {
                 die($exception);
             } else {
+
                 die(500);
             }
         }
@@ -210,14 +189,16 @@ class Process extends Respondus
 
 
         if (!is_dir($execution_target_directory)) {
-            throw new RespondusException("Service not found.", "The directory '$execution_target_directory' does not exist and therefore cannot contain the action requested.");
+            throw new RespondusException("Service not found.", "The directory '$execution_target_directory' for service id '$this->service' does not exist and therefore cannot contain the action requested.");
         }
+
 
         $execution_target_file = $execution_target_directory . "/" . $this->action . ".php";
 
         if (!file_exists($execution_target_file)) {
-            throw new RespondusException("Action not found.", "The file '$execution_target_file' does not exist and therefore cannot contain the action requested.");
+            throw new RespondusException("Action not found.", "The file '$execution_target_file' for service id '$this->service' and action '$this->action' does not exist and therefore cannot contain the action requested.");
         }
+
 
         require_once $execution_target_file;
 

@@ -11,15 +11,6 @@ namespace Moycroft\API\internal\mysql;
 //
 //require_once "../auth/auth.php";
 
-
-use Union\Grooped\gameserver\logging\Log;
-
-session_start();
-
-$verbose = false;
-if(isset($_SESSION['internal.API.dev.verbose']) && $_SESSION['internal.API.dev.verbose']){
-    $verbose = true;
-}
 require_once dirname(__FILE__) . "/../auth/auth.php";
 require_once __DIR__ . "/../../../logging/classes/Log.php";
 
@@ -45,16 +36,16 @@ class Connect
 //        echo $database
         $this->conn = mysqli_connect(DB_HOST,DB_USER,DB_PASS, $database);
         if ($this->conn->connect_error) {
-            Log::message("Connection failed: " . $this->conn->connect_error, "error");
+//            Log::message("Connection failed: " . $this->conn->connect_error, "error");
             return false;
         }else{
 //            $this->query("USE moycroft_global;");
             if (mysqli_connect_errno())
             {
-                Log::message( "Failed to connect to MySQL: " . mysqli_connect_error());
+//                Log::message( "Failed to connect to MySQL: " . mysqli_connect_error());
                 return null;
             }
-            Log::message("Connection to database has been established", "success");
+//            Log::message("Connection to database has been established", "success");
 
             return $this->conn;
         }
@@ -75,8 +66,8 @@ class Connect
         $resp = mysqli_query($this->conn, $query);
         if ($resp) {
             if (!$this->silent) {
-                Log::message("Query ($query) executed successfully.", "success");
-//                echo();
+//                Log::message("Query ($query) executed successfully.", "success");
+////                echo();
             }
             if ($pullData){
                 return $this->getData($resp);
@@ -84,7 +75,7 @@ class Connect
                 return $resp;
             }
         } else {
-            Log::message("Error: " . $query . "<br>" . mysqli_error($this->conn), "error");
+//            Log::message("Error: " . $query . "<br>" . mysqli_error($this->conn), "error");
             return false;
         }
     }
@@ -95,7 +86,7 @@ class Connect
         if ($resp) {
             if (!$this->silent) {
                 echo("Error: " . $query . "<br>" . mysqli_error($this->conn));
-                Log::message("Query ($query) executed successfully.", "success");
+//                Log::message("Query ($query) executed successfully.", "success");
 //                echo();
             }
             if ($pullData){

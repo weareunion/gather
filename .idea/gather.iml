@@ -24,5 +24,8 @@
     <orderEntry type="library" name="micromodal" level="application" />
     <orderEntry type="library" name="smooth-scroll.polyfills" level="application" />
     <orderEntry type="library" name="Google Maps API" level="application" />
+    <orderEntry type="library" name="javascript.util" level="application" />
+    <orderEntry type="library" name="jquery-maskmoney" level="application" />
+    <orderEntry type="library" name="jquery.qrcode" level="application" />
   </component>
 </module>

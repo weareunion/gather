@@ -20,7 +20,6 @@ class ActiveVenue
        $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
        ob_clean();
        header("Location: " . SLATELY_WEBSTACK_HREF_PAGE_VENUE_SELECT . "?destination=".urlencode(base64_encode(urlencode($actual_link))));
-       return;
    }
 
     /**

@@ -54,7 +54,7 @@ class GiftCard extends Card {
      * @throws \Union\Exceptions\TransactionAccountCreationFailure Transaction accounts are created when they are needed. If there is some sort of error with it, this exception will be thrown. This is a fatal error and all processes should be aborted.
      * @throws \Union\Exceptions\Unauthorized Thrown if account is not authorized to do this transaction or if the user is not logged in.
      */
-    public function reset_amount( $amount, $description): void
+    public function reset_amount( $amount, $description, $payment_method = 'unaccounted'): void
     {
 
         // Create new transaction
@@ -66,8 +66,15 @@ class GiftCard extends Card {
         $transaction->set_type('set');
         $transaction->description = $description;
 
+        $this->transactions->reset();
+        $this->transactions->add_global_transaction($transaction);
+        $this->transactions->log_reload_card($amount, $payment_method);
+
         // Add transaction to list
         $this->awaiting_transactions[] = $transaction;
+
+        $this->update_transaction_account();
+        $this->update();
     }
 
 

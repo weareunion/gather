@@ -51,6 +51,7 @@ class Respondus
             return;
         }
         if (isset($_POST['service']) && isset($_POST['action'])) {
+
             try {
                 (new Respondus())->capture()->getResponse()->branch(
                     function ($data) {
@@ -65,7 +66,7 @@ class Respondus
             } catch (\APIException $exception) {
                 Respondus::announce(RESPONDUS_RESPONSE_TYPE_ERROR, $exception->data);
                 exit();
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 Respondus::announce(RESPONDUS_RESPONSE_TYPE_UNKNOWNERROR, $exception);
                 exit();
             }
@@ -76,6 +77,7 @@ class Respondus
 
     function capture()
     {
+
         return (
         (isset($_POST['data'])
             ? (new Process($_POST['service'], $_POST['action'], $_POST['data']))->execute()
@@ -90,6 +92,7 @@ class Respondus
      */
     private static function announce($type, $data)
     {
+
         try {
             switch ($type) {
                 case RESPONDUS_RESPONSE_TYPE_SUCCESS:
@@ -115,39 +118,35 @@ class Respondus
                         header('HTTP/1.1 ' . $data['code'] . ' ' . $data['external']['title'] . ' - ' . $data['external']['description'] . ' @ Log Lookup ID: ' . $data['log_lookup'] . ' >>DEBUG>> ' . $data['internal']['title'] . ' - ' . $data['internal']['description']);
                         header('Content-Type: application/json; charset=UTF-8');
                         die(
-                        json_encode(
-                            array(
-                                'response' =>
-                                    [
-                                        "title" => $data['external']['title'],
-                                        "description" => $data['external']['description'],
-                                        "lookup" => $data['log_lookup'],
-                                        "debug" => [
-                                            "title" => $data['internal']['title'],
-                                            "description" => $data['internal']['description'],
-                                        ]
-                                    ],
-                                'code' =>
-                                    $data['code']
-                            )
-                            , JSON_FORCE_OBJECT)
+                        json_encode(array(
+                            'response' =>
+                                [
+                                    "title" => $data['external']['title'],
+                                    "description" => $data['external']['description'],
+                                    "lookup" => $data['log_lookup'],
+                                    "debug" => [
+                                        "title" => $data['internal']['title'],
+                                        "description" => $data['internal']['description'],
+                                    ]
+                                ],
+                            'code' =>
+                                $data['code']
+                        ), JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT)
                         );
                     } else {
                         header('HTTP/1.1 ' . "500" . ' ' . $data['external']['title'] . ' - ' . $data['external']['description'] . ' @ Log Lookup ID: ' . $data['log_lookup']);
                         header('Content-Type: application/json; charset=UTF-8');
                         die(
-                        json_encode(
-                            array(
-                                'response' =>
-                                    [
-                                        "title" => $data['external']['title'],
-                                        "description" => $data['external']['description'],
-                                        "lookup" => $data['log_lookup']
-                                    ],
-                                'code' =>
-                                    $data['code']
-                            )
-                        )
+                        json_encode(array(
+                            'response' =>
+                                [
+                                    "title" => $data['external']['title'],
+                                    "description" => $data['external']['description'],
+                                    "lookup" => $data['log_lookup']
+                                ],
+                            'code' =>
+                                $data['code']
+                        ), JSON_THROW_ON_ERROR)
                         );
                     }
 
@@ -159,9 +158,8 @@ class Respondus
         } catch (Exception $exception) {
             if (isset($_SESSION['FLAG_DEVELOPER_VERBOSE']) && $_SESSION['FLAG_DEVELOPER_VERBOSE']) {
                 die($exception);
-            } else {
-                die(500);
             }
+            die(500);
         }
     }
 
@@ -186,22 +184,20 @@ class Process extends Respondus
         // Begin interpreting service string
         $interpret = explode(".", strtolower($this->service));
 
-        if ($interpret[0] == 'api') {
+        if ($interpret[0] === 'api') {
             $this->execution_type = $interpret[0];
-        };
-
-//
+        }
 
         $execution_target_directory = UNION_API_DIRECTORY;
 
-        if ($this->execution_type == "special") {
+        if ($this->execution_type === "special") {
             $execution_target_directory = __DIR__ . "/../processors/";
         }
 
-        if ($this->execution_type == 'api') {
+        if ($this->execution_type === 'api') {
             array_shift($interpret);
         }
-        $execution_target_directory .= implode("/", $interpret) . (($this->execution_type == 'api') ? "/processors/" : "");
+        $execution_target_directory .= implode("/", $interpret) . (($this->execution_type === 'api') ? "/processors/" : "");
         $execution_target_directory = realpath($execution_target_directory);
 
 
@@ -214,6 +210,7 @@ class Process extends Respondus
         if (!file_exists($execution_target_file)) {
             throw new RespondusException("Action not found.", "The file '$execution_target_file' does not exist and therefore cannot contain the action requested.");
         }
+
 
         require_once $execution_target_file;
 

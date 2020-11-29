@@ -24,7 +24,7 @@ class GiftCardIssuing
             "display_name" => "Slately Account"
         ]
     ];
-    public static function quick_issue( float $amount, string $on, string $type = 'phone_number'): array{
+    public static function quick_issue( float $amount, string $payment_method, string $on, string $type = 'phone_number', array $payment_attributes = []): array{
 
         //Check if method of issuing is valid
         if (!array_key_exists($type, self::$possible_on_type_states)){
@@ -55,9 +55,12 @@ class GiftCardIssuing
             $contingency = $card->create_contingency();
 
             // Set amount
-            $card->reset_amount($amount, "Initial set of amount");
+            $card->reset_amount($amount, "Initial set of amount", $payment_method);
 
             $status_tree['client_message_sent'] = true;
+
+            // Issue a backup pin
+            $backup_pin = $card->security->authentication->issue_backup_pin();
 
             try {
                 switch ($type) {
@@ -73,7 +76,7 @@ class GiftCardIssuing
                         // Issue and send backup pin message
                         $text = new SMS();
                         $text->set_to_number($on);
-                        $text->set_body("Your backup pin is " . $card->security->authentication->issue_backup_pin() . ". If you forget your pin, or your login this is your only way to recover it. Make note of it somewhere safe.");
+                        $text->set_body("Your backup pin is " . $backup_pin . ". If you forget your pin, or your login this is your only way to recover it. Make note of it somewhere safe.");
                         $text->send();
                         break;
                 }
@@ -82,6 +85,7 @@ class GiftCardIssuing
             }
             $status_tree['card_contingency_id'] = $card->properties->contingency_id;
             $status_tree['card_access_URL'] = $card->get_URL();
+            $status_tree['backup_pin'] = $backup_pin;
             return $status_tree;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 require_once "/lib/union/lib/REST/config/config.php";
-require_once "/lib/union/lib/REST/v1/API/exceptions/exceptions.php";
+require_once "/lib/union/lib/REST/v1/API/exceptions/references/exceptions.php";
 require_once "/lib/union/lib/REST/v1/autoloader/classes/exceptions/ImproperConfig.php";
 require_once "/lib/union/lib/REST/v1/autoloader/classes/exceptions/InvalidLocator.php";
 require_once "/lib/union/lib/REST/v1/autoloader/classes/exceptions/MissingFile.php";
