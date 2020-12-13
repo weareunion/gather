@@ -57,6 +57,7 @@ abstract class FormattedException extends \Exception implements IException
             "code" => $code,
             "log_lookup" => "N\A"
         ];
+        $this->message = $internal_title . ' - ' . $internal_description;
         try{
             $this->data['log_lookup'] = ErrorReport::report($this);
         }catch(\Exception $e){}

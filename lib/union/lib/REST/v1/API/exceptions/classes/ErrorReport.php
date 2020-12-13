@@ -8,12 +8,16 @@ use Moycroft\API\internal\mysql\Connect;
 use Union\Exceptions\FormattedException;
 use Union\Exceptions\UncaughtException;
 use Union\PKG\Autoloader;
+use \Rollbar\Rollbar;
+use \Rollbar\Payload\Level;
 
 class ErrorReport
 {
     static function report($e){
         try {
             require_once "/lib/union/lib/REST/v1/build.php";
+            Rollbar::log(Level::ERROR, $e);
+
 
             Autoloader::import__require("API.managers.mysql");
             $error_code = bin2hex(random_bytes((int)( 1 ))). "" . bin2hex(random_bytes((int)( 1 ))) . "-" . bin2hex(random_bytes((int)( 1 ))) . "" . bin2hex(random_bytes((int)( 1 )));
@@ -80,7 +84,7 @@ class ErrorReport
 
             // Only log if the class is not a Formatted Exception type (Would be a duplicate)
             if (!($e instanceof FormattedException || is_subclass_of($e, FormattedException::class))) {
-                var_dump($e);
+//                var_dump($e);
 
                 self::report($e);
             }

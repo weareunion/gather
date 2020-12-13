@@ -40,16 +40,19 @@ class Account
         // Switch to current account if not specified
         if (!$accountID) $accountID = \Union\API\accounts\Account::get_current_account();
 
+        $this->accountID = $accountID;
+
         // Check if it the account should be treated as a balance account
-        if (!$is_balance_account)
-        // Check if account exists (yes, even if the current account is used)
-        if(((!\Union\API\accounts\Account::account_exists($accountID) && !((new Venue($accountID))->load($accountID))) && !Card::static_exists($accountID)) || !Auth::logged_in())
-            throw new Unauthorized(
-                "Attempted to generate account transactional object. Account with an id ('$accountID') does not exist.",
-                "Couldn't be unauthorised.",
-                "You must be logged in to do this action.",
-                "You don't seem to be logged in",
-                false);
+        if (!($this->account_exits() && $this->isCard())) {
+            // Check if account exists (yes, even if the current account is used)
+            if (( ( !\Union\API\accounts\Account::account_exists($accountID) && !( ( new Venue($accountID) )->load($accountID) ) ) && !Card::static_exists($accountID) ) || !Auth::logged_in())
+                throw new Unauthorized(
+                    "Attempted to generate account transactional object. Account with an id ('$accountID') does not exist.",
+                    "Couldn't be unauthorised.",
+                    "You must be logged in to do this action.",
+                    "You don't seem to be logged in",
+                    false);
+        }
 
         $this->accountID = $accountID;
         $this->account_type = $account_type;
@@ -113,7 +116,7 @@ class Account
         $this->create();
         $connection = new Connect();
         $connection->connect();
-        $data = $connection->query("SELECT is_card FROM slately_users.`transactions_accounts-general` WHERE id='$this->accountID'");
+        $data = $connection->query("SELECT is_card FROM slately_users.`transactions_accounts-general` WHERE id='$this->accountID'", true);
         $connection->disconnect();
         return (bool)$data[0]['is_card'];
     }

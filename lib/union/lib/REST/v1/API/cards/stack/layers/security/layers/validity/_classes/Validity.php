@@ -40,6 +40,11 @@ class Validity {
         // Set flag to current time
         $this->properties->validity->card_created_on = time();
 
+        //TODO: Remove Christmas offset
+        $this->set_validity_start('1608854400');
+        $this->set_validity_end('1639958400');
+        $this->set_expiry_interval('4838400');
+
         // Update
         $this->parent->update();
     }
@@ -179,6 +184,18 @@ class Validity {
 
         // Update
         $this->parent->update();
+    }
+
+    public function getExpirationDate(){
+        return $this->properties->validity->validity_end;
+    }
+
+    public function getActivationStartDate(){
+        return $this->properties->validity->validity_start;
+    }
+
+    public function getActivationInterval(){
+        return $this->properties->validity->expires_if_not_activated_after;
     }
 
 

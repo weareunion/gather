@@ -4,28 +4,5 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="index" level="application" />
-    <orderEntry type="library" name="require" level="application" />
-    <orderEntry type="library" name="instascan" level="application" />
-    <orderEntry type="library" name="jquery.slim" level="application" />
-    <orderEntry type="library" name="jquery.mask" level="application" />
-    <orderEntry type="library" name="password" level="application" />
-    <orderEntry type="library" name="pwstrength-bootstrap" level="application" />
-    <orderEntry type="library" name="Chart.bundle" level="application" />
-    <orderEntry type="library" name="odometer" level="application" />
-    <orderEntry type="library" name="nouislider" level="application" />
-    <orderEntry type="library" name="theme" level="application" />
-    <orderEntry type="library" name="simplebar" level="application" />
-    <orderEntry type="library" name="chart.js" level="application" />
-    <orderEntry type="library" name="jquery" level="application" />
-    <orderEntry type="library" name="all" level="application" />
-    <orderEntry type="library" name="animate.css" level="application" />
-    <orderEntry type="library" name="toastr.js" level="application" />
-    <orderEntry type="library" name="micromodal" level="application" />
-    <orderEntry type="library" name="smooth-scroll.polyfills" level="application" />
-    <orderEntry type="library" name="Google Maps API" level="application" />
-    <orderEntry type="library" name="javascript.util" level="application" />
-    <orderEntry type="library" name="jquery-maskmoney" level="application" />
-    <orderEntry type="library" name="jquery.qrcode" level="application" />
   </component>
 </module>

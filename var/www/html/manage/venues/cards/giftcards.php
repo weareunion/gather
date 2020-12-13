@@ -43,7 +43,7 @@ require_once "/lib/union/lib/REST/v1/build.php";
 
                     </div>
                 </div>
-                <div class="btn btn-secondary btn-raise text-left mt-2 btn-block">
+                <div class="btn btn-secondary btn-raise text-left mt-2 btn-block disabled">
                     <div class="card-body row">
                         <div class="float-left">
                             <i class='fe-search mr-1 lead  mt-3 mr-4 align-middle '></i>

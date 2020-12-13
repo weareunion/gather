@@ -3,6 +3,10 @@
   "servers": [
     {
       "type": "database",
+      "ip": {
+        "private": "10.142.0.3",
+        "public": "35.190.146.17"
+      },
       "name": "slately-private-db-ms-sc-01",
       "display_name": "Slately Master Database",
       "description": "Master Database for Slately",
@@ -15,12 +19,48 @@
     },
     {
       "type": "webserver",
+      "ip": {
+        "private": "10.142.0.7",
+        "public": "No Public IP"
+      },
       "name": "gather-public-ws-sc-01",
       "display_name": "Gather Public WebServer",
       "description": "Slatley Webserver allotted only for Gather and FourOaks",
       "use_zone": true,
       "zone": "us-east1-b",
       "instance_name": "slately-public-ws-southcarolina-01",
+      "cred": {
+        "user": "fleetmanager"
+      }
+    },
+    {
+      "type": "webserver",
+      "ip": {
+        "private": "10.142.0.8",
+        "public": "35.243.238.234"
+      },
+      "name": "gather-public-ws-sc-02",
+      "display_name": "Gather Public WebServer",
+      "description": "Slatley Webserver allotted only for Gather and FourOaks",
+      "use_zone": true,
+      "zone": "us-east1-b",
+      "instance_name": "slately-public-ws-southcarolina-02",
+      "cred": {
+        "user": "fleetmanager"
+      }
+    },
+    {
+      "type": "API",
+      "ip": {
+        "private": "10.128.0.2",
+        "public": "35.209.177.232"
+      },
+      "name": "gather-development-api-sc-02",
+      "display_name": "Slately REST API Server",
+      "description": "Slatley Laravel Development Server",
+      "use_zone": true,
+      "zone": "us-east1-b",
+      "instance_name": "slately-development-api-southcarolina-02",
       "cred": {
         "user": "fleetmanager"
       }

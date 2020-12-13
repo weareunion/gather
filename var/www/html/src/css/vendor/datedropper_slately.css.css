@@ -1,0 +1,27 @@
+
+/*
+
+  INSTRUCTIONS ---------------------------------------------------------------------------------
+  
+  1. Add this stylesheet to the <head> of your pages
+     <link href="YOUR PATH/datedropper_slately.css.css" rel="stylesheet" type="text/css" />
+     
+  2. Use the file name as data-dd-theme attribute on your datedropper elements
+     <input data-dd-theme="datedropper_slately.css" />
+     
+*/
+
+
+div.datedropper.datedropper_slately.css {
+
+  --dd-color1: #766DF4;
+  --dd-color2: #F7F7FC;
+  --dd-color3: #766DF4;
+  --dd-color4: #FFFFFF;
+
+  --dd-radius: 16px;
+  --dd-width: 157px;
+  --dd-shadow: 0 0 37px 0px rgba(0, 0, 0, 0.23);
+
+}
+

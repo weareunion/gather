@@ -142,7 +142,7 @@ class Card
      * Card constructor.
      * @param null $id
      */
-    public function __construct( $id=null, Venue $venue=null){
+    public function __construct( $id=null, Venue $venue=null, $contingency=false){
         // Set up defaults
         $this->properties = json_decode(json_encode($this->defaults, JSON_THROW_ON_ERROR), FALSE, 512, JSON_THROW_ON_ERROR);
 
@@ -150,7 +150,8 @@ class Card
         $this->db = connect::get_obj();
 
         // Overload if exists
-        $this->load($id);
+        if ($contingency) $this->load_contingency($id);
+        else $this->load($id);
 
         // Create Objects
         $this->security = new Security($this->properties->security, $this);

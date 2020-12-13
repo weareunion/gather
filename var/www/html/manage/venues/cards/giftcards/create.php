@@ -12,11 +12,55 @@ require_once "/lib/union/lib/REST/v1/build.php";
 <head>
     <meta charset="UTF-8">
     <title>Cards - Slately for Venues</title>
+    <link href="/src/css/vendor/datedropper_slately.css.css" rel="stylesheet" type="text/css" />
+
+
 </head>
 <body>
 <? \Union\API\web\UI\UIManager::import_file("/elements/navbar/manage/standard.php");?>
 
+<div class="modal  fade" id="MODAL_CARD_ADVANCED" tabindex="-1" role="dialog" >
+    <div class="modal-dialog modal-dialog-centered border-0 " role="document" >
+        <div class="modal-content border-primary border-3" style="overflow-x: hidden;">
+            <div class="modal-header row d-flex bg-faded-primary">
+                <p class="modal-title text-center col-12 align-content-center mt-3 mb-0 pb-0"> <i class="fe-bar-chart h1 pb-0 mb-0 text-primary"></i> <br> </p>
+<!--                <input type="text" data-dd-theme="datedropper_slately"  >-->
+                <!--                <p class="modal-title text-center col-12 align-content-center mt-3"> <i class="fe-alert-circle h1 pb-0 mb-0 text-primary"></i> <br> </p>-->
+                <div class="p-2 col-12 ">
+                    <h2 class="text-center pb-2 text-primary mb-0 mt-1" id="">Advanced Settings</h2>
+                    <p class="text-center font-size-md pt-1 text-primary opacity-80 pl-4 pr-4" id="">Remember, all of these settings can be changed later as well</p>
+                </div>
+                <div class="col-12 m-0 pl-4 pr-4 pb-2 row align-content-center justify-content-center">
+                    <div class="input-group">
+                        <div class="input-group-prepend" data-toggle="tooltip" data-placement="bottom" title="When this card should be able to be activated">
+                            <span class="input-group-text font-weight-medium">Activation <i class="pl-1 fe-help-circle"></i></span>
+                        </div>
+                        <input class="form-control dd-picker form-control-lg" type="text" id="MODAL_CARD_ADVANCED_INPUT_ACTIVATION_DATE" default-offset="0" value="">
+                    </div>
+                </div>
+                <div class="col-12 m-0 pl-4 pr-4 pb-2 row align-content-center justify-content-center">
+                    <div class="input-group">
+                        <div class="input-group-prepend" data-toggle="tooltip" data-placement="bottom" title="When this card should expire">
+                            <span class="input-group-text font-weight-medium">Expiration <i class="pl-1 fe-help-circle"></i></span>
+                        </div>
+                        <input class="form-control dd-picker form-control-lg" type="text" default-offset="186" id="MODAL_CARD_ADVANCED_INPUT_EXPIRATION_DATE"  value="">
+                    </div>
+                </div>
+                <div class="col-12 m-0 pl-4 pr-4 pb-2 row align-content-center justify-content-center">
+                    <div class="input-group">
+                        <div class="input-group-prepend" data-toggle="tooltip" data-placement="bottom" title="When this card must be activated by in order to prevent funds from being released">
+                            <span class="input-group-text font-weight-medium">Activation Deadline <i class="pl-1 fe-help-circle"></i></span>
+                        </div>
+                        <input class="form-control dd-picker form-control-lg" type="text" default-offset="56" id="MODAL_CARD_ADVANCED_INPUT_ACTIVATION_DEADLINE"  value="">
+                    </div>
+                </div>
+                <button type="button" class="ml-4 mr-4 mb-3 mt-1 btn btn-primary btn-lg btn-block" id="MODAL_CARD_ADVANCED_CONTINUE" >Save</button>
 
+            </div>
+        </div>
+
+    </div>
+</div>
 <main>
     <div class="container ">
         <div class="vh-100 row align-items-center">
@@ -49,18 +93,18 @@ require_once "/lib/union/lib/REST/v1/build.php";
                 </div>
                 <div id="CREATE_CARD_VIEW_STEP_2" class="animate__animated animate__fadeIn d-none" style="animation-delay: 0s">
                 <div class="text-center pb-3">
-                    <small class="animate__animated animate__fadeIn" style="animation-delay: 0.3s">Create a Gift Card</small>
-                    <h1 class="mb-0 animate__animated animate__fadeIn" style="animation-delay: 0.4s">Where should we send it?</h1>
-                    <p class="animate__animated animate__fadeIn" style="animation-delay: 0.5s">Please specify a phone number to send it to</p>
+                    <small class="animate__animated animate__fadeIn" style="animation-delay: 0s">Create a Gift Card</small>
+                    <h1 class="mb-0 animate__animated animate__fadeIn" style="animation-delay: 0.1s">Where should we send it?</h1>
+                    <p class="animate__animated animate__fadeIn" style="animation-delay: 0.2s">Please specify a phone number to send it to</p>
                 </div>
-                <div class="row">
+                <div class="row animate__animated animate__fadeIn" style="animation-delay: 0.3s">
                     <div class="d-none d-sm-block col-sm-1 col-md-2 col-lg-4"></div>
                     <div class="col-sm-12 col-md-8 col-lg-4 form-group">
 <!--                        <label for="large-input" class="form-label-lg">Large input</label>-->
                         <input class="form-control form-control-lg text-center h1" type="tel" onclick=" $(this).mask('(000) 000-0000');" data-thousands="," data-decimal="." data-prefix="$" id="CREATE_CARD_VIEW_STEP_2_INPUT_PHONE_NUMBER" placeholder="Enter a Phone Number">
                     </div>
                 </div>
-                <div class="row mt-2">
+                <div class="row mt-2 animate__animated animate__fadeIn" style="animation-delay: 0.4s">
                 <div class="d-none d-sm-block col-sm-1 col-md-2 col-lg-4"></div>
                 <div class="col-sm-12 col-md-8 col-lg-4">
                     <button type="button" onclick="Page.Steps.step_2()" class="btn btn-primary btn-block btn-lg">
@@ -75,11 +119,11 @@ require_once "/lib/union/lib/REST/v1/build.php";
                 </div>
                 <div id="CREATE_CARD_VIEW_STEP_3" class="animate__animated animate__fadeIn d-none" style="animation-delay: 0s">
                     <div class="text-center pb-3">
-                        <small class="animate__animated animate__fadeIn" style="animation-delay: 0.3s">Create a Gift Card</small>
-                        <h1 class="mb-0 animate__animated animate__fadeIn" style="animation-delay: 0.4s">How are they going to pay for it?</h1>
-                        <p class="animate__animated animate__fadeIn" style="animation-delay: 0.5s">Please select a payment method</p>
+                        <small class="animate__animated animate__fadeIn" style="animation-delay: 0s">Create a Gift Card</small>
+                        <h1 class="mb-0 animate__animated animate__fadeIn" style="animation-delay: 0.1s">How are they going to pay for it?</h1>
+                        <p class="animate__animated animate__fadeIn" style="animation-delay: 0.2s">Please select a payment method</p>
                     </div>
-                    <div class="btn btn-translucent-info btn-raise text-left mt-2 btn-block" onclick="Page.Steps.step_3('card')">
+                    <div class="btn btn-translucent-info btn-raise text-left mt-2 btn-block animate__animated animate__fadeIn disabled" style="animation-delay: 0.3s" onclick="Page.Steps.step_3('card')">
                         <div class="card-body row">
                             <div class="float-left">
                                 <i class='fe-credit-card mr-1 lead  mt-3 mr-4 align-middle '></i>
@@ -94,7 +138,7 @@ require_once "/lib/union/lib/REST/v1/build.php";
 
                         </div>
                     </div>
-                    <div class="btn btn-translucent-success btn-raise text-left mt-2 btn-block" onclick="Page.Steps.step_3('cash')">
+                    <div class="btn btn-translucent-success btn-raise text-left mt-2 btn-block animate__animated animate__fadeIn" style="animation-delay: 0.4s" onclick="Page.Steps.step_3('cash')">
                         <div class="card-body row">
                             <div class="float-left">
                                 <i class='fe-dollar-sign mr-1 lead  mt-3 mr-4 align-middle '></i>
@@ -151,6 +195,7 @@ require_once "/lib/union/lib/REST/v1/build.php";
 
 <!--Import all scripts-->
 <?php \Union\API\web\UI\UIManager::import_footer();?>
+<script src="/src/js/vendor/datedropper.pro.min.js"></script>
 
 <script>
     let card_attributes = {
@@ -257,7 +302,11 @@ require_once "/lib/union/lib/REST/v1/build.php";
                             "I understand",
                             "Cancel").then(function(){
                                 card_attributes.payment.method = 'cash'
-                            Page.Submit.push()
+                            slately.UI.modals.info("Do you want to change any other settings?", "You can change things such as the expiration date, the activation deadline and the activation start", "Yes I do", "Nah, I'm good")
+                                .then(function(){
+                                    Page.Steps.advanced_preferences_modal().then(Page.Submit.push)
+                                })
+                                    .catch(Page.Submit.push)
                         })
                         break;
                 }
@@ -300,6 +349,42 @@ require_once "/lib/union/lib/REST/v1/build.php";
                     '                                        </div>\n' +
                     '                                    </div>\n'
                 )
+            },
+            get_advanced_preferences: function(){
+
+            },
+            advanced_preferences_modal: function (){
+                $('#MODAL_CARD_ADVANCED').modal({backdrop: 'static', keyboard: false});
+
+                $('.dd-picker').each(function(e){
+                    let date = new Date();
+                    date.setDate(date.getDate() + (isNaN(parseInt($(this).attr('default-value'))) ? 0 : parseInt($(this).attr('default-value'))) )
+                    $(this).dateDropper({
+                            theme: 'leaf',
+                            large: true,
+                            format: 'Y-m-d',
+                            defaultDate: Page.Steps.get_formatted_date(date)
+                        })
+                });
+
+                return new Promise(function (resolve) {
+                    $("#MODAL_CARD_ADVANCED_CONTINUE").click(function (){
+                        $("#MODAL_CARD_ADVANCED").modal("hide");
+                        Page.Steps.get_advanced_preferences();
+                        resolve(true);
+                    })
+                })
+            },
+            get_formatted_date : function (date) {
+                var year = date.getFullYear();
+
+                var month = (1 + date.getMonth()).toString();
+                month = month.length > 1 ? month : '0' + month;
+
+                var day = date.getDate().toString();
+                day = day.length > 1 ? day : '0' + day;
+
+                return month + '/' + day + '/' + year;
             }
         }
     }

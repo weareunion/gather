@@ -41,7 +41,7 @@ class Console {
      * @param  [type]  $background Background Color
      * @return [type]              Formatted output
      */
-    public static function log($str = '', $color = 'normal', $newline = true, $background_color = null)
+    public static function  log($str = '', $color = 'normal', $newline = true, $background_color = null)
     {
         if( is_bool($color) )
         {

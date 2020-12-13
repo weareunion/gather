@@ -33,8 +33,8 @@ class GiftCard extends Card {
      * @throws \Union\Exceptions\TransactionAccountCreationFailure
      * @throws \Union\Exceptions\Unauthorized
      */
-    public function __construct( $id=null){
-        parent::__construct($id);
+    public function __construct( $id=null, $contingency=false){
+        parent::__construct($id, null, $contingency);
         if ($id === null) {
             $this->properties->type = 'balance_card';
             $this->properties->amount_current = -1;
@@ -171,7 +171,11 @@ class GiftCard extends Card {
     }
 
     public function get_URL(){
-        return SLATELY_WEBSTACK_HREF_PAGE_CLIENT_CARDS_VIEW . "?" . $this->properties->contingency_id;
+        return SLATELY_WEBSTACK_HREF_PAGE_CLIENT_CARDS_GIFTCARDS_VIEW . "?c=" . $this->properties->contingency_id;
+    }
+
+    public function get_transaction_account(){
+        return (new Account($this->properties->card_id, false, 'balance_card'));
     }
 
 

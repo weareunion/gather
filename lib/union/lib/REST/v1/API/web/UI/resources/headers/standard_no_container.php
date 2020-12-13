@@ -1226,9 +1226,9 @@
                 <!--                <p class="modal-title text-center col-12 align-content-center mt-3"> <i class="fe-alert-circle h1 pb-0 mb-0 text-danger"></i> <br> </p>-->
                 <div class="p-2 ">
                     <h2 class="text-center pb-4 text-danger mb-0 mt-2">😞 Oh, Shucks.</h2>
-                    <p class="text-center font-size-md pt-1 text-danger opacity-80 pl-4 pr-4">It seems like something went wrong getting this card. This could be because the card is marked as in active, has been reported for fraud, or other reasons. Please contact us for support. <br> <span class="font-weight-semibold"><?php echo (isset($_GET['id']) ? 'If you do, tell them that the ID is "'. $_GET['id'] . "\"." : 'If you do, tell them that the ID was not given.');?></span> </p>
+                    <p class="text-center font-size-md pt-1 text-danger opacity-80 pl-4 pr-4">It seems like something went wrong getting this card. This could be because the card is marked as in active, has been reported for fraud, or other reasons. Please contact us for support. <br> <span class="font-weight-semibold"><?php echo (isset($_GET['c']) ? 'If you do, tell them that the ID is "'. $_GET['c'] . "\"." : 'If you do, tell them that the ID was not given.');?></span> </p>
                 </div>
-                <button type="button" class="ml-4 mr-4 mb-3 mt-1 btn btn-translucent-danger btn-lg btn-block">Contact Support</button>
+                <a class="ml-4 mr-4 mb-3 mt-1 btn btn-translucent-danger btn-lg btn-block" href="mailto:support@slately.freshdesk.com">Contact Support</a>
 
             </div>
         </div>
